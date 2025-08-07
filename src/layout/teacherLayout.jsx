@@ -171,7 +171,7 @@ function TeacherLayout() {
             <ListItem
               button
               component={NavLink}
-              to="/teacher/settings"
+              to="/teacher/teacherProfile"
               style={navLinkStyle}
             >
               <ListItemIcon sx={{ color: "#fff" }}>
@@ -186,12 +186,9 @@ function TeacherLayout() {
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
           }}
         >
-          <Container maxWidth="xl">
-            <Outlet />
-          </Container>
+          <Outlet />
         </Box>
       </Box>
     </Box>

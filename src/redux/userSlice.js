@@ -1,12 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  fetchUserData,
   loginData,
   schoolRegisterData,
   sendEmailData,
   teacherRegisterData,
+  updateProfileData,
 } from "../thunk/userThunk";
 
-const initialState = {};
+const initialState = {
+  user: null,
+};
 
 const userSlice = createSlice({
   name: "user",
@@ -60,6 +64,31 @@ const userSlice = createSlice({
         state.loading = false;
       })
       .addCase(teacherRegisterData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Error fetching Products";
+      })
+      /*************************************fetchUserData**************************/
+      .addCase(fetchUserData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.fetchUser;
+      })
+      .addCase(fetchUserData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Error fetching Products";
+      })
+      /*************************************updateProfileData**************************/
+      .addCase(updateProfileData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfileData.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(updateProfileData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Error fetching Products";
       });
