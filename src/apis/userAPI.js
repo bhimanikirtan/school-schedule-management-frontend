@@ -4,8 +4,8 @@ export const schoolRegisterAPI = async (values) => {
   const response = await api.post(`school/schoolRegister`, values);
   return response.data;
 };
-export const schoolLoginAPI = async (values) => {
-  const response = await api.post(`school/schoolLogin`, values);
+export const loginAPI = async (values) => {
+  const response = await api.post(`login/`, values);
   return response.data;
 };
 export const sendEmailAPI = async (email) => {
@@ -18,7 +18,7 @@ export const teacherRegisterAPI = async (values) => {
   const response = await api.post(`teacher/teacherRegister`, values);
   return response.data;
 };
-export const teacherLoginAPI = async (values) => {
-  const response = await api.post(`teacher/teacherLogin`, values);
-  return response.data;
-};
+// export const teacherLoginAPI = async (values) => {
+//   const response = await api.post(`login/`, values);
+//   return response.data;
+// };
