@@ -18,7 +18,3 @@ export const teacherRegisterAPI = async (values) => {
   const response = await api.post(`teacher/teacherRegister`, values);
   return response.data;
 };
-// export const teacherLoginAPI = async (values) => {
-//   const response = await api.post(`login/`, values);
-//   return response.data;
-// };
