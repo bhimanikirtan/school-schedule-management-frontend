@@ -9,6 +9,7 @@ import TeacherDashboard from "./teacher/teacherDashboard";
 import Login from "./pages/login";
 import SchoolLayout from "./layout/schoolLayout";
 import TeacherLayout from "./layout/teacherLayout";
+import TeacherProfilePage from "./teacher/teacherProfile";
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
             <Route
               path="/teacher/teacherDashboard"
               element={<TeacherDashboard />}
+            />
+            <Route
+              path="/teacher/teacherProfile"
+              element={<TeacherProfilePage />}
             />
           </Route>
           <Route element={<SchoolLayout />}>

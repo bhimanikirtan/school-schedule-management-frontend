@@ -1,9 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
+  fetchUserAPI,
   loginAPI,
   schoolRegisterAPI,
   sendEmailAPI,
   teacherRegisterAPI,
+  updateProfileAPI,
 } from "../apis/userAPI";
 
 export const schoolRegisterData = createAsyncThunk(
@@ -41,6 +43,25 @@ export const teacherRegisterData = createAsyncThunk(
   async (values) => {
     try {
       const response = await teacherRegisterAPI(values);
+      return response;
+    } catch (error) {
+      return error.response || "Failed to fetch Products";
+    }
+  }
+);
+export const fetchUserData = createAsyncThunk("user/fetchUser", async () => {
+  try {
+    const response = await fetchUserAPI();
+    return response;
+  } catch (error) {
+    return error.response || "Failed to fetch Products";
+  }
+});
+export const updateProfileData = createAsyncThunk(
+  "user/updateProfile",
+  async (values) => {
+    try {
+      const response = await updateProfileAPI(values);
       return response;
     } catch (error) {
       return error.response || "Failed to fetch Products";
