@@ -1,9 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  schoolLoginAPI,
+  loginAPI,
   schoolRegisterAPI,
   sendEmailAPI,
-  teacherLoginAPI,
   teacherRegisterAPI,
 } from "../apis/userAPI";
 
@@ -18,17 +17,14 @@ export const schoolRegisterData = createAsyncThunk(
     }
   }
 );
-export const schoolLoginData = createAsyncThunk(
-  "user/schoolLogin",
-  async (values) => {
-    try {
-      const response = await schoolLoginAPI(values);
-      return response;
-    } catch (error) {
-      return error.response || "Failed to fetch Products";
-    }
+export const loginData = createAsyncThunk("user/login", async (values) => {
+  try {
+    const response = await loginAPI(values);
+    return response;
+  } catch (error) {
+    return error.response || "Failed to fetch Products";
   }
-);
+});
 export const sendEmailData = createAsyncThunk(
   "user/sendEmail",
   async (email) => {
@@ -45,17 +41,6 @@ export const teacherRegisterData = createAsyncThunk(
   async (values) => {
     try {
       const response = await teacherRegisterAPI(values);
-      return response;
-    } catch (error) {
-      return error.response || "Failed to fetch Products";
-    }
-  }
-);
-export const teacherLoginData = createAsyncThunk(
-  "user/teacherLogin",
-  async (values) => {
-    try {
-      const response = await teacherLoginAPI(values);
       return response;
     } catch (error) {
       return error.response || "Failed to fetch Products";

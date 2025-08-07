@@ -54,7 +54,9 @@ const TeacherDashboard = () => {
                 <Avatar sx={{ width: 60, height: 60 }}>T</Avatar>
                 <Box>
                   <Typography variant="h6">Mr. John Doe</Typography>
-                  <Typography color="textSecondary">Mathematics Teacher</Typography>
+                  <Typography color="textSecondary">
+                    Mathematics Teacher
+                  </Typography>
                 </Box>
               </Box>
 
@@ -63,9 +65,7 @@ const TeacherDashboard = () => {
               <Typography variant="body2">
                 Email: john.doe@example.com
               </Typography>
-              <Typography variant="body2">
-                Phone: +91-9876543210
-              </Typography>
+              <Typography variant="body2">Phone: +91-9876543210</Typography>
             </CardContent>
           </Card>
         </Grid>

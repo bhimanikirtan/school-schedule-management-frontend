@@ -1,38 +1,44 @@
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import {
   Box,
-  TextField,
   Button,
+  TextField,
   Typography,
-  Paper,
-  Grid,
+  IconButton,
+  InputAdornment,
   CircularProgress,
+  Grid,
+  Link,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useFormik } from "formik";
-import * as Yup from "yup";
-import { teacherRegisterData } from "../thunk/userThunk";
+import * as yup from "yup";
+import { useDispatch } from "react-redux";
+import { schoolRegisterData } from "../thunk/userThunk";
 import { toast } from "react-toastify";
-import teacherIllustration from "../assets/loginimg.avif";
-import { useState } from "react";
+import registerIllustration from "../assets/loginimg.avif";
 
-function TeacherRegister() {
-  const dispatch = useDispatch();
-  const [searchParams] = useSearchParams();
+export default function SchoolRegister() {
   const navigate = useNavigate();
-  const token = searchParams.get("token");
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const validationSchema = Yup.object({
-    name: Yup.string()
+  const validationSchema = yup.object({
+    name: yup
+      .string()
+      .required("School name is required")
       .min(3, "Name must be at least 3 characters")
-      .max(50, "Name must be under 50 characters")
-      .required("Full name is required"),
-    email: Yup.string()
+      .max(50, "Name must not exceed 50 characters"),
+    email: yup
+      .string()
       .email("Enter a valid email")
       .required("Email is required"),
-    password: Yup.string()
-      .min(8, "Password must be at least 8 characters")
+    password: yup
+      .string()
+      .min(8, "Password should be at least 8 characters")
       .required("Password is required"),
   });
 
@@ -43,18 +49,14 @@ function TeacherRegister() {
       password: "",
     },
     validationSchema,
-    onSubmit: async (values, { resetForm }) => {
+    onSubmit: async (values) => {
       setLoading(true);
       try {
-        const res = await dispatch(
-          teacherRegisterData({ ...values, token })
-        ).unwrap();
-        toast.success(res.msg || "Registration successful");
-        resetForm();
-        setTimeout(() => navigate("/Login"), 1500);
-      } catch (err) {
-        toast.error(err?.msg || "Registration failed");
-        console.error(err);
+        const res = await dispatch(schoolRegisterData(values)).unwrap();
+        toast.success(res?.msg);
+        navigate("/Login");
+      } catch (error) {
+        toast.error(error?.msg || "Registration failed");
       } finally {
         setLoading(false);
       }
@@ -83,9 +85,9 @@ function TeacherRegister() {
       >
         <Box
           component="img"
-          src={teacherIllustration}
-          alt="Teacher Illustration"
-          sx={{ width: "100%", maxWidth: 500 }}
+          src={registerIllustration}
+          alt="Register Illustration"
+          sx={{ width: "100%", maxWidth: 550 }}
         />
       </Grid>
       <Grid
@@ -98,66 +100,68 @@ function TeacherRegister() {
           alignItems: "center",
           justifyContent: "center",
           px: 4,
+          maxWidth: 530,
         }}
       >
-        <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
-          👩‍🏫 Teacher Registration
+        <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
+          🏫 School Registration
         </Typography>
         <Typography
           variant="body1"
-          color="text.secondary"
           align="center"
-          sx={{ mb: 2 }}
+          color="text.secondary"
+          mb={2}
         >
-          Register to connect with your school and start teaching.
+          Fill in the details to register your school
         </Typography>
 
-        <form
-          onSubmit={formik.handleSubmit}
-          style={{ width: "100%", maxWidth: 400 }}
-        >
+        <form onSubmit={formik.handleSubmit}>
           <TextField
-            label="Full Name"
-            name="name"
             fullWidth
+            name="name"
+            label="School Name"
             margin="normal"
             value={formik.values.name}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.name && Boolean(formik.errors.name)}
+            error={formik.touched.name && !!formik.errors.name}
             helperText={formik.touched.name && formik.errors.name}
           />
-
           <TextField
-            label="Email Address"
-            name="email"
-            type="email"
             fullWidth
+            name="email"
+            label="School Email"
+            type="email"
             margin="normal"
             value={formik.values.email}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.email && Boolean(formik.errors.email)}
+            error={formik.touched.email && !!formik.errors.email}
             helperText={formik.touched.email && formik.errors.email}
           />
-
           <TextField
-            label="Password"
-            name="password"
-            type="password"
             fullWidth
+            name="password"
+            label="Password"
+            type={showPassword ? "text" : "password"}
             margin="normal"
             value={formik.values.password}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.password && Boolean(formik.errors.password)}
+            error={formik.touched.password && !!formik.errors.password}
             helperText={formik.touched.password && formik.errors.password}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword((prev) => !prev)}>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
 
           <Button
             type="submit"
-            fullWidth
             variant="contained"
+            fullWidth
             sx={{
               mt: 3,
               py: 1.5,
@@ -170,13 +174,20 @@ function TeacherRegister() {
             {loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
-              "Register"
+              "Register School"
             )}
           </Button>
         </form>
+
+        <Box mt={3} textAlign="center">
+          <Typography variant="body2">
+            Already have an account?{" "}
+            <Link component={RouterLink} to="/Login" fontWeight="bold">
+              Login here
+            </Link>
+          </Typography>
+        </Box>
       </Grid>
     </Grid>
   );
 }
-
-export default TeacherRegister;

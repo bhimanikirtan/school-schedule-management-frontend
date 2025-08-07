@@ -1,9 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  schoolLoginData,
+  loginData,
   schoolRegisterData,
   sendEmailData,
-  teacherLoginData,
   teacherRegisterData,
 } from "../thunk/userThunk";
 
@@ -28,14 +27,14 @@ const userSlice = createSlice({
         state.error = action.payload || "Error fetching Products";
       })
       /*************************************schoolLoginData**************************/
-      .addCase(schoolLoginData.pending, (state) => {
+      .addCase(loginData.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(schoolLoginData.fulfilled, (state) => {
+      .addCase(loginData.fulfilled, (state) => {
         state.loading = false;
       })
-      .addCase(schoolLoginData.rejected, (state, action) => {
+      .addCase(loginData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Error fetching Products";
       })
@@ -61,18 +60,6 @@ const userSlice = createSlice({
         state.loading = false;
       })
       .addCase(teacherRegisterData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Error fetching Products";
-      })
-      /*************************************teacherLoginData**************************/
-      .addCase(teacherLoginData.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(teacherLoginData.fulfilled, (state) => {
-        state.loading = false;
-      })
-      .addCase(teacherLoginData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Error fetching Products";
       });

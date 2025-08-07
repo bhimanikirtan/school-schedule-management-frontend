@@ -2,24 +2,21 @@ import React, { useState } from "react";
 import { TextField, Button, Box, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { sendEmailData } from "../thunk/userThunk";
+import { toast } from "react-toastify";
 
 function ManageTeacher() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-
     try {
-      dispatch(sendEmailData(email)).unwrap();
-
-      setMessage("Teacher invitation sent successfully!");
-      setEmail(""); // clear input
+      const res = await dispatch(sendEmailData(email)).unwrap();
+      toast.success(res?.msg);
+      setEmail("");
     } catch (err) {
       console.error(err);
-      setMessage("Failed to send invitation.");
+      toast.error(err?.msg);
     }
   };
 
@@ -45,12 +42,6 @@ function ManageTeacher() {
           Send Invitation
         </Button>
       </form>
-
-      {message && (
-        <Typography sx={{ mt: 2 }} color="secondary">
-          {message}
-        </Typography>
-      )}
     </Box>
   );
 }

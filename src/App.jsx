@@ -1,13 +1,14 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import "./App.css";
-import SchoolLogin from "./pages/schoolLogin";
-import SchoolRegister from "./pages/schoolRegister";
+import SchoolRegister from "./school/schoolRegister";
 import Home from "./pages/Home";
 import SchoolDashboard from "./school/schoolDashboard";
 import ManageTeacher from "./school/manageTeacher";
 import TeacherRegister from "./teacher/teacherRegister";
-import Teacherlogin from "./teacher/teacherlogin";
 import TeacherDashboard from "./teacher/teacherDashboard";
+import Login from "./pages/login";
+import SchoolLayout from "./layout/schoolLayout";
+import TeacherLayout from "./layout/teacherLayout";
 
 function App() {
   return (
@@ -15,13 +16,22 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/schoolLogin" element={<SchoolLogin />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/schoolRegister" element={<SchoolRegister />} />
-          <Route path="/schoolDashboard" element={<SchoolDashboard />} />
-          <Route path="/manageTeacher" element={<ManageTeacher />} />
           <Route path="/teacherRegister" element={<TeacherRegister />} />
-          <Route path="/teacherLogin" element={<Teacherlogin />} />
-          <Route path="/teacherDashboard" element={<TeacherDashboard />} />
+          <Route element={<TeacherLayout />}>
+            <Route
+              path="/teacher/teacherDashboard"
+              element={<TeacherDashboard />}
+            />
+          </Route>
+          <Route element={<SchoolLayout />}>
+            <Route
+              path="/school/schoolDashboard"
+              element={<SchoolDashboard />}
+            />
+            <Route path="/school/manageTeacher" element={<ManageTeacher />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>
