@@ -14,7 +14,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-// import { registerUser } from "../redux/authSlice";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
@@ -86,9 +85,7 @@ export default function SchoolRegister() {
               justifyContent: "center",
               alignItems: "center",
             }}
-          >
-            {/* <Typography variant="h3">SHOP.CO</Typography> */}
-          </Box>
+          ></Box>
           <Box
             sx={{
               width: "100%",
@@ -200,67 +197,6 @@ export default function SchoolRegister() {
                           }}
                         />
                       </Box>
-                      {/* <Box
-                        sx={{
-                          width: "100%",
-                        }}
-                      >
-                        <TextField
-                          name="confirmPassword"
-                          type={showconfirmPassword ? "text" : "password"}
-                          fullWidth
-                          label="Confirm Password"
-                          value={formik.values.confirmPassword}
-                          onChange={formik.handleChange}
-                          error={
-                            formik.touched.confirmPassword &&
-                            formik.errors.confirmPassword
-                          }
-                          helperText={
-                            formik.touched.confirmPassword &&
-                            formik.errors.confirmPassword
-                          }
-                          InputProps={{
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <IconButton
-                                  onClick={() =>
-                                    setShowconfirmPassword(!showconfirmPassword)
-                                  }
-                                  edge="end"
-                                >
-                                  {showconfirmPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )}
-                                </IconButton>
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
-                      </Box> */}
-                      {/* <Box sx={{ width: "100%" }}>
-                        <TextField
-                          select
-                          fullWidth
-                          name="role"
-                          label="Select Role"
-                          value={formik.values.role}
-                          onChange={formik.handleChange}
-                          error={
-                            formik.touched.role && Boolean(formik.errors.role)
-                          }
-                          helperText={formik.touched.role && formik.errors.role}
-                          SelectProps={{
-                            native: true,
-                          }}
-                        >
-                          <option value="user">User</option>
-                          <option value="vendor">Vendor</option>
-                          <option value="admin">Admin</option>
-                        </TextField>
-                      </Box> */}
 
                       <Button
                         className="black"
