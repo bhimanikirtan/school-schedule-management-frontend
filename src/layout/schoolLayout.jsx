@@ -1,83 +1,159 @@
 import {
   AppBar,
+  Avatar,
   Box,
+  CssBaseline,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Toolbar,
   Typography,
-  IconButton,
-  Button,
 } from "@mui/material";
 import {
-  ArrowBack as ArrowBackIcon,
-  ArrowForward as ArrowForwardIcon,
+  Home as HomeIcon,
+  Book as BookIcon,
+  Settings as SettingsIcon,
   Logout as LogoutIcon,
+  CalendarMonth as CalendarMonthIcon,
 } from "@mui/icons-material";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { fetchUserData } from "../thunk/userThunk";
 import { toast } from "react-toastify";
 
-function SchoolLayout() {
-  const handleLogout = () => {
-    toast.success("Logout Successfully");
-    localStorage.removeItem("token");
-    window.location.href = "/Login";
-  };
+const drawerWidth = 250;
 
-  return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
-      <AppBar
-        position="fixed"
-        elevation={1}
+const navItems = [
+  { text: "Home", icon: <HomeIcon />, path: "/school/schoolDashboard" },
+  { text: "Manage Teacher", icon: <BookIcon />, path: "/school/manageTeacher" },
+  {
+    text: "Schedule",
+    icon: <CalendarMonthIcon />,
+    path: "/school/manageSchedule",
+  },
+
+  { text: "Settings", icon: <SettingsIcon />, path: "/school/schoolProfile" },
+  { text: "Logout", icon: <LogoutIcon />, path: "/logout" },
+];
+
+export default function SchoolLayout() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  const location = useLocation();
+  useEffect(() => {
+    dispatch(fetchUserData());
+  }, [dispatch]);
+
+  const drawer = (
+    <Box sx={{ px: 2, py: 3 }}>
+      <Typography
+        variant="h6"
         sx={{
-          background: "#43cea2",
-          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 3,
+          fontWeight: "bold",
+          color: "#1976d2",
         }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h6" fontWeight="bold">
-            🏫 School Admin Panel
-          </Typography>
+        🎓 SchoolManagement
+      </Typography>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton
-              sx={{ color: "white" }}
-              onClick={() => window.history.back()}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-            <IconButton
-              sx={{ color: "white" }}
-              onClick={() => window.history.forward()}
-            >
-              <ArrowForwardIcon />
-            </IconButton>
-
-            <Button
-              variant="outlined"
-              onClick={handleLogout}
+      <List>
+        {navItems.map((item) => (
+          <ListItem key={item.text} disablePadding sx={{ mb: 5 }}>
+            <ListItemButton
+              selected={location.pathname === item.path}
               sx={{
-                ml: 2,
-                color: "white",
-                borderColor: "white",
-                textTransform: "none",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  borderColor: "white",
+                borderRadius: 2,
+                "&.Mui-selected": {
+                  backgroundColor: "#e3f2fd",
+                  color: "#1976d2",
+                  "& .MuiListItemIcon-root": { color: "#1976d2" },
                 },
               }}
-              startIcon={<LogoutIcon />}
+              onClick={() => {
+                if (item.text === "Logout") {
+                  localStorage.removeItem("token");
+                  toast.success("Logout SuccessFully");
+                  navigate("/login");
+                } else {
+                  navigate(item.path);
+                }
+              }}
             >
-              Logout
-            </Button>
+              <ListItemIcon sx={{ color: "#546e7a" }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{
+          backgroundColor: "#fff",
+          color: "#111827",
+          borderBottom: "1px solid #e6e9eb",
+          ml: { md: `${drawerWidth}px` },
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="body2" fontWeight={500}>
+              {user?.name}
+            </Typography>
+            <Avatar
+              onClick={() => {
+                navigate("/school/schoolProfile");
+              }}
+              alt="Saikat"
+              src={`http://localhost:5000/${user?.image}`}
+              sx={{ width: 36, height: 36, cursor: "pointer" }}
+            />
           </Box>
         </Toolbar>
       </AppBar>
+      <Box
+        component="nav"
+        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+        aria-label="sidebar"
+      >
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", md: "block" },
+            "& .MuiDrawer-paper": {
+              width: drawerWidth,
+              borderRight: "1px solid #eef2f4",
+              bgcolor: "#ffffff",
+            },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
 
       <Box
         component="main"
         sx={{
+          flexGrow: 1,
           mt: 10,
-          p: 3,
-          minHeight: "calc(100vh - 64px)",
         }}
       >
         <Outlet />
@@ -85,5 +161,3 @@ function SchoolLayout() {
     </Box>
   );
 }
-
-export default SchoolLayout;

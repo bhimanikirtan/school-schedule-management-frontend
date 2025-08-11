@@ -11,6 +11,8 @@ import {
   TableBody,
   Paper,
   CircularProgress,
+  Avatar,
+  Container,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { sendEmailData } from "../thunk/userThunk";
@@ -40,28 +42,29 @@ function ManageTeacher() {
   }, [dispatch]);
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto", mt: 5 }}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
-        📧 Send Teacher Invitation
-      </Typography>
+    <Container>
+      <Box sx={{ maxWidth: 700, mx: "auto", mt: 5 }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          📧 Send Teacher Invitation
+        </Typography>
 
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Teacher Email"
-          variant="outlined"
-          fullWidth
-          required
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          sx={{ mb: 2 }}
-        />
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Teacher Email"
+            variant="outlined"
+            fullWidth
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{ mb: 2 }}
+          />
 
-        <Button type="submit" variant="contained" fullWidth>
-          Send Invitation
-        </Button>
-      </form>
-
+          <Button type="submit" variant="contained" fullWidth>
+            Send Invitation
+          </Button>
+        </form>
+      </Box>
       <Box mt={5}>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
           👩‍🏫 All Registered Teachers
@@ -78,19 +81,65 @@ function ManageTeacher() {
                     #
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Avatar
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     Name
                   </TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     Email
                   </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Phone
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Address
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    City
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    State
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Country
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Pincode
+                  </TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
                 {allTeachers?.map((teacher, index) => (
                   <TableRow key={teacher._id}>
                     <TableCell>{index + 1}</TableCell>
+                    <TableCell>
+                      <Avatar
+                        alt={teacher?.name}
+                        src={
+                          teacher?.image
+                            ? `http://localhost:5000/${teacher?.image}`
+                            : "/default-avatar.png"
+                        }
+                      />
+                    </TableCell>
                     <TableCell>{teacher?.name || "N/A"}</TableCell>
-                    <TableCell>{teacher?.email}</TableCell>
+                    <TableCell>{teacher?.email || "N/A"}</TableCell>
+                    <TableCell>{teacher?.phone || "N/A"}</TableCell>
+                    <TableCell>
+                      {teacher?.addressData?.address || "N/A"}
+                    </TableCell>
+                    <TableCell>{teacher?.addressData?.city || "N/A"}</TableCell>
+                    <TableCell>
+                      {teacher?.addressData?.state || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {teacher?.addressData?.country || "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {teacher?.addressData?.pincode || "N/A"}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -98,7 +147,7 @@ function ManageTeacher() {
           </Paper>
         )}
       </Box>
-    </Box>
+    </Container>
   );
 }
 
