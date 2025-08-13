@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   deleteScheduleAPI,
   getAllScheduleAPI,
+  getAllteacherScheduleAPI,
   setScheduleAPI,
   updateScheduleAPI,
 } from "../apis/scheduleAPI";
@@ -30,14 +31,31 @@ export const getAllScheduleData = createAsyncThunk(
     }
   }
 );
+export const getAllteacherScheduleData = createAsyncThunk(
+  "schedule/getAllteacherSchedule",
+  async () => {
+    try {
+      const response = await getAllteacherScheduleAPI();
+      return response;
+    } catch (error) {
+      return error.response || "Failed to fetch Products";
+    }
+  }
+);
 export const updateScheduleData = createAsyncThunk(
   "schedule/updateSchedule",
-  async ({ id, teacherId,title, start, end }) => {
+  async ({ id, teacherId, title, start, end }) => {
     try {
       console.log(start, "+++++++++++++");
       console.log(end, "________________");
 
-      const response = await updateScheduleAPI({ id, teacherId,title, start, end });
+      const response = await updateScheduleAPI({
+        id,
+        teacherId,
+        title,
+        start,
+        end,
+      });
       return response;
     } catch (error) {
       return error.response || "Failed to fetch Products";

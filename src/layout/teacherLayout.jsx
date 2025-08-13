@@ -114,7 +114,7 @@ function TeacherLayout() {
               <ListItemText primary="Dashboard" />
             </ListItem>
 
-            <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
+            {/* <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
             <ListItem
               button
               component={NavLink}
@@ -125,13 +125,13 @@ function TeacherLayout() {
                 <PeopleIcon />
               </ListItemIcon>
               <ListItemText primary="ManageTeachers" />
-            </ListItem>
+            </ListItem> */}
             <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
 
             <ListItem
               button
               component={NavLink}
-              to="/teacher/classSchedule"
+              to="/teacher/manageteacherSchedule"
               style={navLinkStyle}
             >
               <ListItemIcon sx={{ color: "#fff" }}>
