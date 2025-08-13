@@ -19,6 +19,7 @@ import {
   Settings as SettingsIcon,
   Logout as LogoutIcon,
   CalendarMonth as CalendarMonthIcon,
+  MenuBook as MenuBookIcon,
 } from "@mui/icons-material";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +32,11 @@ const drawerWidth = 250;
 const navItems = [
   { text: "Home", icon: <HomeIcon />, path: "/school/schoolDashboard" },
   { text: "Manage Teacher", icon: <BookIcon />, path: "/school/manageTeacher" },
+  {
+    text: "Manage Subjects",
+    icon: <MenuBookIcon />,
+    path: "/school/manageSubjects",
+  },
   {
     text: "Schedule",
     icon: <CalendarMonthIcon />,

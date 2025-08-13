@@ -15,6 +15,7 @@ import PrivateRoute from "./routes/privateRoute";
 import SchoolProfile from "./school/schoolProfile";
 import ManageSchedule from "./school/manageSchedule";
 import ManageteacherSchedule from "./teacher/manageteacherSchedule";
+import ManageSubjects from "./school/manageSubjects";
 
 function App() {
   return (
@@ -48,6 +49,10 @@ function App() {
                 element={<SchoolDashboard />}
               />
               <Route path="/school/manageTeacher" element={<ManageTeacher />} />
+              <Route
+                path="/school/manageSubjects"
+                element={<ManageSubjects />}
+              />
               <Route
                 path="/school/manageSchedule"
                 element={<ManageSchedule />}
