@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUserData, updateProfileData } from "../thunk/userThunk";
 import { toast } from "react-toastify";
 
-export default function TeacherProfilePage() {
+export default function SchoolProfile() {
   const theme = useTheme();
   const dispatch = useDispatch();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -99,10 +99,10 @@ export default function TeacherProfilePage() {
           fontWeight={600}
           gutterBottom
         >
-          Teacher Profile
+          School Profile
         </Typography>
         <Typography color="text.secondary" sx={{ mb: 3 }}>
-          Manage your teacher information and preferences
+          Manage your School information and preferences
         </Typography>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>

@@ -1,20 +1,27 @@
 import { Box, Grid, Paper, Typography, Button, Divider } from "@mui/material";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getAllTeachersData } from "../thunk/schoolThunk";
 
 function SchoolDashboard() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const { allTeachers } = useSelector((state) => state.school);
+  useEffect(() => {
+    dispatch(getAllTeachersData());
+  }, [dispatch]);
   return (
-    <Box>
+    <Box sx={{ p: 2 }}>
       <Typography variant="h4" gutterBottom>
         🎓 School Dashboard
       </Typography>
 
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper elevation={3} sx={{ p: 2 }}>
+          <Paper elevation={2} sx={{ p: 2 }}>
             <Typography variant="h6">Total Teachers</Typography>
-            <Typography variant="h4">25</Typography>
+            <Typography variant="h4">{allTeachers?.length}</Typography>
           </Paper>
         </Grid>
       </Grid>
@@ -34,7 +41,6 @@ function SchoolDashboard() {
         👨‍🏫 Teachers Overview
       </Typography>
       <Paper sx={{ p: 2 }}>
-        <Typography>Teacher list table will be shown here.</Typography>
         <Button
           variant="contained"
           color="primary"

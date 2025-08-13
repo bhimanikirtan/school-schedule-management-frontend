@@ -131,19 +131,6 @@ function TeacherLayout() {
             <ListItem
               button
               component={NavLink}
-              to="/teacher/sendEmail"
-              style={navLinkStyle}
-            >
-              <ListItemIcon sx={{ color: "#fff" }}>
-                <EmailIcon />
-              </ListItemIcon>
-              <ListItemText primary="Send Email" />
-            </ListItem>
-            <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
-
-            <ListItem
-              button
-              component={NavLink}
               to="/teacher/classSchedule"
               style={navLinkStyle}
             >
@@ -152,20 +139,6 @@ function TeacherLayout() {
               </ListItemIcon>
               <ListItemText primary="Class Schedule" />
             </ListItem>
-            <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
-
-            <ListItem
-              button
-              component={NavLink}
-              to="/teacher/resources"
-              style={navLinkStyle}
-            >
-              <ListItemIcon sx={{ color: "#fff" }}>
-                <FolderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Resources" />
-            </ListItem>
-
             <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
 
             <ListItem

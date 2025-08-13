@@ -10,6 +10,10 @@ import Login from "./pages/login";
 import SchoolLayout from "./layout/schoolLayout";
 import TeacherLayout from "./layout/teacherLayout";
 import TeacherProfilePage from "./teacher/teacherProfile";
+import PublicRoute from "./routes/publicRoute";
+import PrivateRoute from "./routes/privateRoute";
+import SchoolProfile from "./school/schoolProfile";
+import ManageSchedule from "./school/manageSchedule";
 
 function App() {
   return (
@@ -17,25 +21,34 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/schoolRegister" element={<SchoolRegister />} />
           <Route path="/teacherRegister" element={<TeacherRegister />} />
-          <Route element={<TeacherLayout />}>
-            <Route
-              path="/teacher/teacherDashboard"
-              element={<TeacherDashboard />}
-            />
-            <Route
-              path="/teacher/teacherProfile"
-              element={<TeacherProfilePage />}
-            />
+          <Route path="/login" element={<Login />} />
+          <Route element={<PublicRoute />}>
+            <Route path="/schoolRegister" element={<SchoolRegister />} />
           </Route>
-          <Route element={<SchoolLayout />}>
-            <Route
-              path="/school/schoolDashboard"
-              element={<SchoolDashboard />}
-            />
-            <Route path="/school/manageTeacher" element={<ManageTeacher />} />
+          <Route element={<PrivateRoute />}>
+            <Route element={<TeacherLayout />}>
+              <Route
+                path="/teacher/teacherDashboard"
+                element={<TeacherDashboard />}
+              />
+              <Route
+                path="/teacher/teacherProfile"
+                element={<TeacherProfilePage />}
+              />
+            </Route>
+            <Route element={<SchoolLayout />}>
+              <Route
+                path="/school/schoolDashboard"
+                element={<SchoolDashboard />}
+              />
+              <Route path="/school/manageTeacher" element={<ManageTeacher />} />
+              <Route
+                path="/school/manageSchedule"
+                element={<ManageSchedule />}
+              />
+              <Route path="/school/schoolProfile" element={<SchoolProfile />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
