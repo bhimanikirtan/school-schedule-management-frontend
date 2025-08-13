@@ -1,0 +1,49 @@
+.myCalendarWrapper {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  max-width: 1200px;
+}
+
+.fc-toolbar.fc-header-toolbar {
+  background-color: #3b7bbb;
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+}
+.fc .fc-button {
+  background-color: white;
+  color: #1976d2;
+  border: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.fc .fc-button:hover {
+  background-color: #1565c0;
+  color: white;
+}
+
+.fc-day-today {
+  background-color: #76bde7 !important;
+}
+.fc-event {
+  background-color: #efddc3 !important;
+  border: none !important;
+  border-radius: 6px;
+  padding: 2px;
+  font-size: 0.85rem;
+}
+.fc-event-title {
+  color: #04080c;
+  white-space: normal;
+  font-weight: 500;
+}
+.fc-event-time {
+  color: #04080c;
+}
+
+.fc-col-header-cell-cushion {
+  font-weight: bold;
+  color: #444;
+}
