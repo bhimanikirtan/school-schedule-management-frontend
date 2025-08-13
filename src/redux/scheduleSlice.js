@@ -2,12 +2,14 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   deleteScheduleData,
   getAllScheduleData,
+  getAllteacherScheduleData,
   setScheduleData,
   updateScheduleData,
 } from "../thunk/scheduleThunk";
 
 const initialState = {
   allSchedule: [],
+  allteacherSchedule: [],
 };
 
 const scheduleSlice = createSlice({
@@ -39,6 +41,19 @@ const scheduleSlice = createSlice({
         state.allSchedule = action.payload.allSchedules;
       })
       .addCase(getAllScheduleData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Error fetching Products";
+      })
+      /*************************************getAllteacherSchedulesData**************************/
+      .addCase(getAllteacherScheduleData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllteacherScheduleData.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allteacherSchedule = action.payload.allteacherSchedule;
+      })
+      .addCase(getAllteacherScheduleData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Error fetching Products";
       })

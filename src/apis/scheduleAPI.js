@@ -11,6 +11,10 @@ export const getAllScheduleAPI = async () => {
   const response = await api.get(`schedule/getAllschedules`);
   return response.data;
 };
+export const getAllteacherScheduleAPI = async () => {
+  const response = await api.get(`schedule/getAllteacherschedules`);
+  return response.data;
+};
 export const updateScheduleAPI = async ({
   id,
   teacherId,
