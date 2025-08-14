@@ -11,15 +11,14 @@ export const setScheduleData = createAsyncThunk(
   "schedule/setSchedule",
   async (values) => {
     try {
-      console.log(values);
-
       const response = await setScheduleAPI(values);
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return error.response || "Failed to add schedule";
     }
   }
 );
+
 export const getAllScheduleData = createAsyncThunk(
   "schedule/getAllSchedule",
   async () => {
@@ -27,10 +26,11 @@ export const getAllScheduleData = createAsyncThunk(
       const response = await getAllScheduleAPI();
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return error.response || "Failed to fetch schedules";
     }
   }
 );
+
 export const getAllteacherScheduleData = createAsyncThunk(
   "schedule/getAllteacherSchedule",
   async () => {
@@ -38,30 +38,31 @@ export const getAllteacherScheduleData = createAsyncThunk(
       const response = await getAllteacherScheduleAPI();
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return error.response || "Failed to fetch teacher schedules";
     }
   }
 );
+
 export const updateScheduleData = createAsyncThunk(
   "schedule/updateSchedule",
-  async ({ id, teacherId, title, start, end }) => {
+  async ({ id, teacherId, title, start, end, className, subject }) => {
     try {
-      console.log(start, "+++++++++++++");
-      console.log(end, "________________");
-
       const response = await updateScheduleAPI({
         id,
         teacherId,
         title,
         start,
         end,
+        className,
+        subject,
       });
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return error.response || "Failed to update schedule";
     }
   }
 );
+
 export const deleteScheduleData = createAsyncThunk(
   "schedule/deleteSchedule",
   async (id) => {
@@ -69,7 +70,7 @@ export const deleteScheduleData = createAsyncThunk(
       const response = await deleteScheduleAPI(id);
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return error.response || "Failed to delete schedule";
     }
   }
 );

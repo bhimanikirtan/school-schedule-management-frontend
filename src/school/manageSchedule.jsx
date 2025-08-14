@@ -23,21 +23,29 @@ import {
   updateScheduleData,
 } from "../thunk/scheduleThunk";
 import { toast } from "react-toastify";
+import { getAllSubjectData } from "../thunk/subjectThunk";
 
 export default function ManageSchedule() {
   const dispatch = useDispatch();
   const { allTeachers } = useSelector((state) => state.school);
+  const { allSubjects } = useSelector((state) => state.subject);
+
   const [open, setOpen] = useState(false);
   const [events, setEvents] = useState([]);
-  const [teacherId, setTeacherId] = useState("");
-  const [title, setTitle] = useState("");
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
+  const [formData, setFormData] = useState({
+    teacherId: "",
+    title: "",
+    subject: "",
+    className: "",
+    start: "",
+    end: "",
+  });
   const [edit, setEdit] = useState(false);
   const [editId, setEditId] = useState("");
 
   useEffect(() => {
     dispatch(getAllTeachersData());
+    dispatch(getAllSubjectData());
     fetchSchedules();
   }, [dispatch]);
 
@@ -46,12 +54,15 @@ export default function ManageSchedule() {
     setEvents(
       res.allSchedules.map((s) => ({
         id: s._id,
-        title: `${s.title} (${s.teacherId?.name || ""})`,
         start: s.start,
         end: s.end,
         extendedProps: {
           teacherId: s.teacherId?._id,
-          originalTitle: s.title,
+          teacherName: s.teacherId?.name || "",
+          image: s.teacherId?.image,
+          title: s.title || "",
+          subject: s.subject || "",
+          className: s.className || "",
         },
       }))
     );
@@ -60,15 +71,36 @@ export default function ManageSchedule() {
   const handleDateClick = (info) => {
     setEdit(false);
     setEditId("");
-    setTitle("");
-    setTeacherId("");
-    const localDateTime = info.date
-      .toLocaleString("sv-SE", { hour12: false })
-      .replace(" ", "T");
-    console.log(localDateTime);
-    setStart(localDateTime);
-    setEnd(localDateTime);
+    setFormData({
+      teacherId: "",
+      title: "",
+      subject: "",
+      className: "",
+      start: formatDateTime(info.date),
+      end: formatDateTime(info.date),
+    });
     setOpen(true);
+  };
+
+  const handleEventClick = (info) => {
+    setEdit(true);
+    setEditId(info.event.id);
+    setFormData({
+      teacherId: info.event.extendedProps.teacherId || "",
+      title: info.event.extendedProps.title || "",
+      subject: info.event.extendedProps.subject || "",
+      className: info.event.extendedProps.className || "",
+      start: formatDateTime(info.event.start),
+      end: formatDateTime(info.event.end || info.event.start),
+    });
+    setOpen(true);
+  };
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSave = async () => {
@@ -77,87 +109,79 @@ export default function ManageSchedule() {
         const res = await dispatch(
           updateScheduleData({
             id: editId,
-            title,
-            teacherId,
-            start,
-            end,
+            ...formData,
           })
         ).unwrap();
         toast.success(res.msg);
       } else {
-        const newEvent = { teacherId, title, start, end };
-        const res = await dispatch(setScheduleData(newEvent)).unwrap();
+        const res = await dispatch(setScheduleData(formData)).unwrap();
         toast.success(res.msg);
       }
       await fetchSchedules();
-      setOpen(false);
-      setTeacherId("");
-      setTitle("");
+      handleClose();
     } catch (error) {
       toast.error(error.message || "Something went wrong");
     }
   };
+
   const handleDelete = async () => {
     const res = await dispatch(deleteScheduleData(editId)).unwrap();
     toast.success(res.msg);
     await fetchSchedules();
+    handleClose();
+  };
+
+  const handleClose = () => {
     setOpen(false);
-    setTeacherId("");
-    setTitle("");
+    setFormData({
+      teacherId: "",
+      title: "",
+      subject: "",
+      className: "",
+      start: "",
+      end: "",
+    });
     setEditId("");
     setEdit(false);
   };
-  const handleEventClick = async (info) => {
-    setEdit(true);
-    setOpen(true);
-    setTeacherId(info.event.extendedProps.teacherId || "");
-    setTitle(info.event.extendedProps.originalTitle || "");
-    setEditId(info.event.id);
-    const formatDateForInput = (date) => {
-      const tzOffset = date.getTimezoneOffset() * 60000;
-      const localISOTime = new Date(date - tzOffset).toISOString().slice(0, 16);
-      return localISOTime;
-    };
-    setStart(formatDateForInput(info.event.start));
-    setEnd(formatDateForInput(info.event.end || info.event.start));
-  };
 
   const handleEventDrop = async (info) => {
-    const res = await dispatch(
+    await dispatch(
       updateScheduleData({
         id: info.event.id,
-        teacherId: info.event.extendedProps.teacherId,
-        title: info.event.extendedProps.originalTitle,
+        ...info.event.extendedProps,
         start: info.event.start,
         end: info.event.end,
       })
-    );
-    toast.success(res.msg);
+    ).unwrap();
     fetchSchedules();
   };
 
   const handleEventResize = async (info) => {
-    const res = await dispatch(
+    await dispatch(
       updateScheduleData({
         id: info.event.id,
-        teacherId: info.event.extendedProps.teacherId,
-        title: info.event.extendedProps.originalTitle,
+        ...info.event.extendedProps,
         start: info.event.start,
         end: info.event.end,
       })
-    );
-    toast.success(res.msg);
+    ).unwrap();
     fetchSchedules();
+  };
+
+  const formatDateTime = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date - tzOffset).toISOString().slice(0, 16);
   };
 
   return (
     <div className="myCalendarWrapper">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
+        initialView="timeGridWeek" // 👈 Shows one week
         events={events}
-        editable={true}
-        selectable={true}
+        editable
+        selectable
         eventClick={handleEventClick}
         dateClick={handleDateClick}
         eventDrop={handleEventDrop}
@@ -165,15 +189,27 @@ export default function ManageSchedule() {
         headerToolbar={{
           left: "prev,next today",
           center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
+          // right: "timeGridDay,timeGridWeek,dayGridMonth", // 👈 Optional buttons
+        }}
+        eventContent={(info) => {
+          const { teacherName, image } = info.event.extendedProps;
+
+          return (
+            <div className="custom-event-card">
+              <img
+                src={`http://localhost:5000/${image}`}
+                alt={teacherName}
+                className="teacher-avatar"
+              />
+              <span className="teacher-name">{teacherName}</span>
+              <span className="check-icon">✔</span>
+            </div>
+          );
         }}
       />
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
+
+      {/* Dialog */}
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: "bold", fontSize: "1.25rem" }}>
           {edit ? "Edit Schedule" : "Add Schedule"}
         </DialogTitle>
@@ -186,11 +222,13 @@ export default function ManageSchedule() {
             mt: 1,
           }}
         >
+          {/* Teacher */}
           <TextField
             select
             label="Select Teacher"
-            value={teacherId}
-            onChange={(e) => setTeacherId(e.target.value)}
+            name="teacherId"
+            value={formData.teacherId}
+            onChange={handleChange}
             fullWidth
             size="small"
           >
@@ -200,19 +238,52 @@ export default function ManageSchedule() {
               </MenuItem>
             ))}
           </TextField>
+
+          {/* Custom Title */}
           <TextField
-            label="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            label="Title (e.g., Dance Class)"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
             fullWidth
             size="small"
           />
+
+          {/* Subject */}
+          <TextField
+            select
+            label="Select Subject"
+            name="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            fullWidth
+            size="small"
+          >
+            {allSubjects.map((s) => (
+              <MenuItem key={s._id} value={s.subject}>
+                {s.subject}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          {/* Class Name */}
+          <TextField
+            label="Class Name (e.g., 7A, 7B)"
+            name="className"
+            value={formData.className}
+            onChange={handleChange}
+            fullWidth
+            size="small"
+          />
+
+          {/* Start / End */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
               type="datetime-local"
               label="Start Time"
-              value={start}
-              onChange={(e) => setStart(e.target.value)}
+              name="start"
+              value={formData.start}
+              onChange={handleChange}
               InputLabelProps={{ shrink: true }}
               fullWidth
               size="small"
@@ -220,20 +291,18 @@ export default function ManageSchedule() {
             <TextField
               type="datetime-local"
               label="End Time"
-              value={end}
-              onChange={(e) => setEnd(e.target.value)}
+              name="end"
+              value={formData.end}
+              onChange={handleChange}
               InputLabelProps={{ shrink: true }}
               fullWidth
               size="small"
             />
           </Box>
         </DialogContent>
+
         <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>
-          <Button
-            onClick={() => setOpen(false)}
-            color="inherit"
-            variant="outlined"
-          >
+          <Button onClick={handleClose} color="inherit" variant="outlined">
             Cancel
           </Button>
 
