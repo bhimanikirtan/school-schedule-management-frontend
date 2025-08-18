@@ -21,9 +21,9 @@ export const setScheduleData = createAsyncThunk(
 
 export const getAllScheduleData = createAsyncThunk(
   "schedule/getAllSchedule",
-  async () => {
+  async (teacherId) => {
     try {
-      const response = await getAllScheduleAPI();
+      const response = await getAllScheduleAPI(teacherId);
       return response;
     } catch (error) {
       return error.response || "Failed to fetch schedules";

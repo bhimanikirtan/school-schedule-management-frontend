@@ -6,11 +6,13 @@ export const setScheduleAPI = async (values) => {
   return response.data;
 };
 
-export const getAllScheduleAPI = async () => {
-  const response = await api.get(`schedule/getAllschedules`);
+export const getAllScheduleAPI = async (teacherId) => {
+  const url = teacherId
+    ? `schedule/getAllschedules?teacherId=${teacherId}`
+    : `schedule/getAllschedules`;
+  const response = await api.get(url);
   return response.data;
 };
-
 export const getAllteacherScheduleAPI = async () => {
   const response = await api.get(`schedule/getAllteacherschedules`);
   return response.data;
