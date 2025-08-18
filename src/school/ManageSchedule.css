@@ -1,39 +1,82 @@
 .myCalendarWrapper {
-  background: #fff;
+  background: #f4eee5;
   padding: 15px;
+  max-width: auto;
 }
 
-.fc-toolbar.fc-header-toolbar {
-  background-color: #3b7bbb;
-  padding: 8px;
-  color: white;
-}
 .fc .fc-button {
-  background-color: white;
-  color: #1976d2;
+  background-color: transparent;
+  color: #000;
   border: none;
   font-weight: bold;
   transition: 0.3s;
 }
 
 .fc .fc-button:hover {
-  background-color: #1565c0;
-  color: white;
+  color: #fff;
+  background-color: #000;
+}
+.fc-header-toolbar {
+  display: flex;
+  flex-direction: column;
+}
+.fc-toolbar-chunk > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.fc-day-today {
-  background-color: #76bde7 !important;
-}
-.fc-event {
-  background-color: #efddc3 !important;
+.fc-theme-standard,
+.fc-scrollgrid,
+.fc-theme-standard th {
   border: none !important;
-  padding: 5px;
-  font-size: 15px;
 }
-.fc-event-title {
-  color: #000;
-  white-space: normal;
+.fc-v-event {
+  border: none;
+  background-color: #f4eee5;
+  padding: 0 !important;
 }
-.fc-event-time {
-  color: #000;
+.fc-timegrid-event-harness-inset .fc-timegrid-event {
+  box-shadow: none;
+}
+.fc-scroller {
+  overflow: auto;
+  scrollbar-width: none;
+}
+.fc-daygrid-body-unbalanced {
+  display: none !important;
+}
+.fc-day-today {
+  background-color: #f4eee5 !important;
+}
+
+.custom-event-card {
+  display: flex;
+  align-items: center;
+  background-color: #7a8244;
+  border-radius: 2px;
+  color: white;
+  padding: 4px 6px;
+  gap: 6px;
+  height: 100%;
+  font-size: 0.85rem;
+}
+
+.teacher-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.teacher-name {
+  font-weight: 400;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.check-icon {
+  font-size: 1rem;
 }
