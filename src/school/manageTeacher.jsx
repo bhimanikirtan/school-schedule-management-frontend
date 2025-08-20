@@ -119,7 +119,7 @@ function ManageTeacher() {
                         alt={teacher?.name}
                         src={
                           teacher?.image
-                            ? `http://localhost:5000/${teacher?.image}`
+                            ? `http://192.168.146.1:5000/${teacher?.image}`
                             : "/default-avatar.png"
                         }
                       />

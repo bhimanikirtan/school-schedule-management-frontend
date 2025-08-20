@@ -11,6 +11,8 @@ export const setScheduleData = createAsyncThunk(
   "schedule/setSchedule",
   async (values) => {
     try {
+      console.log(values, "+++++++++++++++++++");
+
       const response = await setScheduleAPI(values);
       return response;
     } catch (error) {
@@ -45,16 +47,13 @@ export const getAllteacherScheduleData = createAsyncThunk(
 
 export const updateScheduleData = createAsyncThunk(
   "schedule/updateSchedule",
-  async ({ id, teacherId, title, start, end, className, subject }) => {
+  async ({ id, values }) => {
     try {
+      console.log(values, "00000000000000000");
+
       const response = await updateScheduleAPI({
         id,
-        teacherId,
-        title,
-        start,
-        end,
-        className,
-        subject,
+        values,
       });
       return response;
     } catch (error) {

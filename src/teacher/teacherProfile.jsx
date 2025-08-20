@@ -49,7 +49,7 @@ export default function TeacherProfilePage() {
         state: user?.addressData?.state || "",
         country: user?.addressData?.country || "",
       });
-      setImageFile(`http://localhost:5000/${user?.image}`);
+      setImageFile(`http://192.168.146.1:5000/${user?.image}`);
     }
   }, [user]);
 
