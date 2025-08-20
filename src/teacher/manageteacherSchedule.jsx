@@ -18,6 +18,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import rrulePlugin from "@fullcalendar/rrule";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -45,13 +46,32 @@ export default function ManageSchedule() {
     start: "",
     end: "",
   });
+  const [recurrence, setRecurrence] = useState({
+    freq: "",
+    interval: 1,
+    byweekday: [],
+    until: "",
+    dtstart: "",
+    bymonthday: "",
+  });
   const [edit, setEdit] = useState(false);
+  const [isRecurrence, setisRecurrence] = useState(false);
   const [editId, setEditId] = useState("");
 
   const formatDateTime = (date) => {
     const tzOffset = date.getTimezoneOffset() * 60000;
     return new Date(date - tzOffset).toISOString().slice(0, 16);
   };
+  function rruleToDateTimeLocal(rruleDate) {
+    if (!rruleDate) return "";
+    const date = new Date(
+      rruleDate.replace(
+        /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,
+        "$1-$2-$3T$4:$5:$6Z"
+      )
+    );
+    return date.toISOString().slice(0, 16);
+  }
 
   const fetchSchedules = useCallback(async () => {
     const res = await dispatch(getAllteacherScheduleData()).unwrap();
@@ -61,7 +81,51 @@ export default function ManageSchedule() {
       const subject = s?.subject || "";
       const className = s?.className || "";
       const title = s?.title || "";
+      if (s?.rrule) {
+        const rruleParts = {};
+        s.rrule.split(";").forEach((part) => {
+          const [key, value] = part.split("=");
+          rruleParts[key] = value;
+        });
 
+        const byweekday = rruleParts?.BYDAY ? rruleParts.BYDAY.split(",") : [];
+        const freq = rruleParts?.FREQ?.toLowerCase() || "";
+        const interval = parseInt(rruleParts?.INTERVAL) || 1;
+        const until = rruleParts?.UNTIL || null;
+        const dtstart = rruleParts?.DTSTART || s.start;
+        const bymonthday = rruleParts?.BYMONTHDAY
+          ? Number(rruleParts.BYMONTHDAY)
+          : null;
+
+        return {
+          id: s._id,
+          title: `${teacherName} ${title ? "· " + title : ""}`,
+          rrule: {
+            freq: freq?.toUpperCase(),
+            interval,
+            byweekday,
+            dtstart,
+            until,
+            bymonthday,
+          },
+          extendedProps: {
+            teacherId: s.teacherId?._id || "",
+            teacherName,
+            image,
+            title,
+            subject,
+            className,
+            recurrence: {
+              freq: freq?.toUpperCase(),
+              interval,
+              byweekday,
+              until,
+              dtstart,
+              bymonthday,
+            },
+          },
+        };
+      }
       return {
         id: s._id,
         title: `${teacherName} ${title ? "· " + title : ""}`,
@@ -97,6 +161,14 @@ export default function ManageSchedule() {
       start: formatDateTime(info.date),
       end: formatDateTime(info.date),
     });
+    setRecurrence({
+      freq: "",
+      interval: 1,
+      byweekday: [],
+      until: "",
+      dtstart: "",
+      bymonthday: "",
+    });
     setOpen(true);
   };
 
@@ -111,6 +183,22 @@ export default function ManageSchedule() {
       start: formatDateTime(info.event.start),
       end: formatDateTime(info.event.end || info.event.start),
     });
+    const eventRecurrence =
+      info.event.rrule || info.event.extendedProps.recurrence || {};
+    console.log("Event recurrence for editing:", eventRecurrence);
+
+    setRecurrence({
+      freq: eventRecurrence.freq?.toLowerCase() || "",
+      interval: eventRecurrence.interval || 1,
+      byweekday: eventRecurrence.byweekday || eventRecurrence.byWeekDay || [],
+      until: eventRecurrence.until
+        ? rruleToDateTimeLocal(eventRecurrence.until)
+        : "",
+      dtstart: eventRecurrence.dtstart || "",
+      bymonthday: eventRecurrence.bymonthday
+        ? Number(eventRecurrence.bymonthday)
+        : "",
+    });
     setOpen(true);
   };
 
@@ -120,35 +208,81 @@ export default function ManageSchedule() {
       [e.target.name]: e.target.value,
     }));
   };
+  const buildRRule = (recurrence) => {
+    if (!recurrence || !recurrence.freq) return "";
 
+    const {
+      freq,
+      interval = 1,
+      byweekday = [],
+      bymonthday = "",
+      until = "",
+    } = recurrence;
+
+    let rule = `FREQ=${freq?.toUpperCase()}`;
+
+    if (interval > 1) rule += `;INTERVAL=${interval}`;
+
+    if (byweekday.length > 0 && freq?.toUpperCase() === "WEEKLY") {
+      rule += `;BYDAY=${byweekday
+        .map((d) => d.trim().toUpperCase())
+        .join(",")}`;
+    }
+
+    if (freq.toUpperCase() === "MONTHLY" && bymonthday) {
+      rule += `;BYMONTHDAY=${bymonthday}`;
+    }
+
+    if (until) {
+      if (/^\d{8}T\d{6}Z$/.test(until)) {
+        rule += `;UNTIL=${until}`;
+      } else {
+        const untilDate = new Date(until);
+        if (!isNaN(untilDate)) {
+          const formatted =
+            untilDate.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+          rule += `;UNTIL=${formatted}`;
+        }
+      }
+    }
+
+    console.log("Generated RRULE:", rule);
+    return rule;
+  };
   const handleSave = async () => {
     try {
-      if (edit) {
-        const res = await dispatch(
-          updateScheduleData({
-            id: editId,
-            teacherId: formData.teacherId,
-            title: formData.title,
-            subject: formData.subject,
-            className: formData.className,
-            start: new Date(formData.start).toISOString(),
-            end: new Date(formData.end).toISOString(),
-          })
-        ).unwrap();
-        toast.success(res.msg);
-      } else {
-        const res = await dispatch(
-          setScheduleData({
-            teacherId: formData.teacherId,
-            title: formData.title,
-            subject: formData.subject,
-            className: formData.className,
-            start: new Date(formData.start).toISOString(),
-            end: new Date(formData.end).toISOString(),
-          })
-        ).unwrap();
-        toast.success(res.msg);
+      const payload = {
+        teacherId: formData.teacherId,
+        title: formData.title,
+        subject: formData.subject,
+        className: formData.className,
+        start: new Date(formData.start).toISOString(),
+        end: new Date(formData.end).toISOString(),
+      };
+
+      console.log("Saving with recurrence:", recurrence);
+
+      if (isRecurrence) {
+        const rrule = buildRRule(recurrence);
+        console.log("Generated rrule:", rrule);
+
+        if (rrule) {
+          payload.rrule = rrule;
+        }
       }
+
+      console.log("Final payload:", payload);
+
+      let res;
+      if (edit) {
+        res = await dispatch(
+          updateScheduleData({ id: editId, values: payload })
+        ).unwrap();
+      } else {
+        res = await dispatch(setScheduleData(payload)).unwrap();
+      }
+
+      toast.success(res.msg);
       await fetchSchedules();
       handleClose();
     } catch (error) {
@@ -173,36 +307,54 @@ export default function ManageSchedule() {
       start: "",
       end: "",
     });
+    setRecurrence({
+      freq: "",
+      interval: 1,
+      byweekday: [],
+      until: "",
+      dtstart: "",
+      bymonthday: "",
+    });
     setEditId("");
     setEdit(false);
   };
+  const buildSchedulePayload = (event) => {
+    const finalRecurrence = event.extendedProps.recurrence || {};
+    const rrule = buildRRule(finalRecurrence);
 
+    return {
+      id: event.id,
+      teacherId: event.extendedProps.teacherId,
+      title: event.extendedProps.title,
+      subject: event.extendedProps.subject,
+      className: event.extendedProps.className,
+      start: event.start?.toISOString(),
+      end: event.end?.toISOString(),
+      rrule,
+    };
+  };
   const handleEventDrop = async (info) => {
+    const event = info.event;
+    console.log("Event being dropped:", event);
+
+    const payload = buildSchedulePayload(event);
+    console.log("Drop Payload:", payload);
+
     await dispatch(
-      updateScheduleData({
-        id: info.event.id,
-        teacherId: info.event.extendedProps.teacherId,
-        title: info.event.extendedProps.title,
-        subject: info.event.extendedProps.subject,
-        className: info.event.extendedProps.className,
-        start: info.event.start?.toISOString(),
-        end: info.event.end?.toISOString(),
-      })
+      updateScheduleData({ id: event.id, values: payload })
     ).unwrap();
     fetchSchedules();
   };
-
+  /*********************************Event Resize Function*********************************** */
   const handleEventResize = async (info) => {
+    const event = info.event;
+    console.log("Event being resized:", event);
+
+    const payload = buildSchedulePayload(event);
+    console.log("Resize Payload:", payload);
+
     await dispatch(
-      updateScheduleData({
-        id: info.event.id,
-        teacherId: info.event.extendedProps.teacherId,
-        title: info.event.extendedProps.title,
-        subject: info.event.extendedProps.subject,
-        className: info.event.extendedProps.className,
-        start: info.event.start?.toISOString(),
-        end: info.event.end?.toISOString(),
-      })
+      updateScheduleData({ id: event.id, values: payload })
     ).unwrap();
     fetchSchedules();
   };
@@ -225,7 +377,12 @@ export default function ManageSchedule() {
   return (
     <div className="myCalendarWrapper">
       <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        plugins={[
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin,
+          rrulePlugin,
+        ]}
         initialView="timeGridWeek"
         events={events}
         editable
@@ -348,7 +505,7 @@ export default function ManageSchedule() {
             <Avatar
               src={
                 user.image
-                  ? `http://localhost:5000/${user.image}`
+                  ? `http://192.168.146.1:5000/${user.image}`
                   : "/placeholder.png"
               }
               alt={user?.name || "Teacher"}
@@ -453,6 +610,98 @@ export default function ManageSchedule() {
               size="small"
             />
           </Box>
+          <Typography variant="subtitle2" sx={{ mt: 2 }}>
+            Recurrence (Optional)
+          </Typography>
+
+          <TextField
+            select
+            label="Repeat"
+            value={recurrence?.freq}
+            onChange={(e) => {
+              setRecurrence((prev) => ({ ...prev, freq: e.target.value }));
+              setisRecurrence(true);
+            }}
+            fullWidth
+            size="small"
+          >
+            <MenuItem value="">None</MenuItem>
+            <MenuItem value="daily">Daily</MenuItem>
+            <MenuItem value="weekly">Weekly</MenuItem>
+            <MenuItem value="monthly">Monthly</MenuItem>
+          </TextField>
+
+          {recurrence?.freq && (
+            <>
+              <TextField
+                type="number"
+                label="Repeat Every (interval)"
+                value={recurrence?.interval}
+                onChange={(e) =>
+                  setRecurrence((prev) => ({
+                    ...prev,
+                    interval: Number(e.target.value),
+                  }))
+                }
+                fullWidth
+                size="small"
+              />
+
+              {recurrence?.freq === "weekly" && (
+                <Box display="flex" gap={1} flexWrap="wrap">
+                  {["MO", "TU", "WE", "TH", "FR", "SA", "SU"].map((day) => (
+                    <Button
+                      key={day}
+                      variant={
+                        recurrence?.byweekday.includes(day)
+                          ? "contained"
+                          : "outlined"
+                      }
+                      size="small"
+                      onClick={() =>
+                        setRecurrence((prev) => ({
+                          ...prev,
+                          byweekday: prev.byweekday.includes(day)
+                            ? prev.byweekday.filter((d) => d !== day)
+                            : [...prev.byweekday, day],
+                        }))
+                      }
+                    >
+                      {day}
+                    </Button>
+                  ))}
+                </Box>
+              )}
+              {recurrence?.freq === "monthly" && (
+                <TextField
+                  type="number"
+                  label="Day of Month"
+                  value={recurrence.bymonthday}
+                  onChange={(e) =>
+                    setRecurrence((prev) => ({
+                      ...prev,
+                      bymonthday: Number(e.target.value),
+                    }))
+                  }
+                  inputProps={{ min: 1, max: 31 }}
+                  fullWidth
+                  size="small"
+                />
+              )}
+
+              <TextField
+                type="datetime-local"
+                label="Until"
+                value={recurrence.until}
+                onChange={(e) =>
+                  setRecurrence((prev) => ({ ...prev, until: e.target.value }))
+                }
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                size="small"
+              />
+            </>
+          )}
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>

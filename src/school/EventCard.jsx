@@ -1,7 +1,7 @@
 import { Avatar, Box, Typography } from "@mui/material";
 
 export default function EventCard({ teacherName, image }) {
-  const src = image ? `http://localhost:5000/${image}` : "/placeholder.png";
+  const src = image ? `http://192.168.146.1:5000/${image}` : "/placeholder.png";
 
   return (
     <>

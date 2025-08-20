@@ -18,23 +18,8 @@ export const getAllteacherScheduleAPI = async () => {
   return response.data;
 };
 
-export const updateScheduleAPI = async ({
-  id,
-  teacherId,
-  title,
-  start,
-  end,
-  className,
-  subject,
-}) => {
-  const response = await api.put(`schedule/updateSchedule/${id}`, {
-    teacherId,
-    title,
-    start,
-    end,
-    className,
-    subject,
-  });
+export const updateScheduleAPI = async ({ id, values }) => {
+  const response = await api.put(`schedule/updateSchedule/${id}`, values);
   return response.data;
 };
 
