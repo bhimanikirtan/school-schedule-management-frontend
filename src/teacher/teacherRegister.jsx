@@ -1,27 +1,16 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  Grid,
-  CircularProgress,
-} from "@mui/material";
 import { useDispatch } from "react-redux";
-import { useFormik } from "formik";
 import * as Yup from "yup";
 import { teacherRegisterData } from "../thunk/userThunk";
 import { toast } from "react-toastify";
-import teacherIllustration from "../assets/loginimg.avif";
-import { useState } from "react";
+import registerIllustration from "../assets/loginimg.avif";
+import AuthForm from "../commonComponents/AuthForm";
 
 function TeacherRegister() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
-  const [loading, setLoading] = useState(false);
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -36,146 +25,33 @@ function TeacherRegister() {
       .required("Password is required"),
   });
 
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-    validationSchema,
-    onSubmit: async (values, { resetForm }) => {
-      setLoading(true);
-      try {
-        const res = await dispatch(
-          teacherRegisterData({ ...values, token })
-        ).unwrap();
-        toast.success(res.msg || "Registration successful");
-        resetForm();
-        setTimeout(() => navigate("/Login"), 1500);
-      } catch (err) {
-        toast.error(err?.msg || "Registration failed");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    },
-  });
+  const handleSubmit = async (values, setLoading) => {
+    try {
+      const res = await dispatch(
+        teacherRegisterData({ ...values, token })
+      ).unwrap();
+      toast.success(res.msg || "Registration successful");
+      setTimeout(() => navigate("/Login"), 1500);
+    } catch (err) {
+      toast.error(err?.msg || "Registration failed");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <Grid
-      container
-      sx={{
-        display: "flex",
-        height: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Grid
-        item
-        xs={12}
-        md={6}
-        sx={{
-          display: { xs: "none", md: "flex" },
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Box
-          component="img"
-          src={teacherIllustration}
-          alt="Teacher Illustration"
-          sx={{ width: "100%", maxWidth: 500 }}
-        />
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          px: 4,
-        }}
-      >
-        <Typography variant="h4" align="center" fontWeight="bold" gutterBottom>
-          👩‍🏫 Teacher Registration
-        </Typography>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          align="center"
-          sx={{ mb: 2 }}
-        >
-          Register to connect with your school and start teaching.
-        </Typography>
-
-        <form
-          onSubmit={formik.handleSubmit}
-          style={{ width: "100%", maxWidth: 400 }}
-        >
-          <TextField
-            label="Full Name"
-            name="name"
-            fullWidth
-            margin="normal"
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.name && Boolean(formik.errors.name)}
-            helperText={formik.touched.name && formik.errors.name}
-          />
-
-          <TextField
-            label="Email Address"
-            name="email"
-            type="email"
-            fullWidth
-            margin="normal"
-            value={formik.values.email}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.email && Boolean(formik.errors.email)}
-            helperText={formik.touched.email && formik.errors.email}
-          />
-
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.password && Boolean(formik.errors.password)}
-            helperText={formik.touched.password && formik.errors.password}
-          />
-
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{
-              mt: 3,
-              py: 1.5,
-              fontWeight: "bold",
-              borderRadius: "50px",
-              background: "linear-gradient(to right, #43cea2, #185a9d)",
-            }}
-            disabled={loading}
-          >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              "Register"
-            )}
-          </Button>
-        </form>
-      </Grid>
-    </Grid>
+    <AuthForm
+      title="👩‍🏫 Teacher Registration"
+      subtitle="Register to connect with your school and start teaching."
+      initialValues={{ name: "", email: "", password: "" }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+      buttonText="Register Teacher"
+      alternateText="Already have an account?"
+      alternateLink="/Login"
+      illustration={registerIllustration}
+    />
   );
 }
 
