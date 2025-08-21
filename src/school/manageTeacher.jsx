@@ -4,25 +4,18 @@ import {
   Button,
   Box,
   Typography,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Paper,
-  CircularProgress,
-  Avatar,
   Container,
+  Avatar,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { sendEmailData } from "../thunk/userThunk";
 import { toast } from "react-toastify";
 import { getAllTeachersData } from "../thunk/schoolThunk";
+import ListingTable from "../commonComponents/ListingTable";
 
 function ManageTeacher() {
   const dispatch = useDispatch();
   const { allTeachers } = useSelector((state) => state.school);
-  console.log("allllllllll", allTeachers);
 
   const [email, setEmail] = useState("");
 
@@ -40,6 +33,39 @@ function ManageTeacher() {
   useEffect(() => {
     dispatch(getAllTeachersData());
   }, [dispatch]);
+  const teacherTableHeaders = [
+    { label: "#", field: "index" },
+    { label: "Avatar", field: "avatar" },
+    { label: "Name", field: "name" },
+    { label: "Email", field: "email" },
+    { label: "Phone", field: "phone" },
+    { label: "Address", field: "address" },
+    { label: "City", field: "city" },
+    { label: "State", field: "state" },
+    { label: "Country", field: "country" },
+    { label: "Pincode", field: "pincode" },
+  ];
+  const teacherTableData = allTeachers.map((t, i) => ({
+    index: i + 1,
+    avatar: (
+      <Avatar
+        alt={t?.name}
+        src={
+          t?.image
+            ? `http://192.168.146.1:5000/${t?.image}`
+            : "/default-avatar.png"
+        }
+      />
+    ),
+    name: t?.name,
+    email: t?.email,
+    phone: t?.phone,
+    address: t?.addressData?.address || "N/A",
+    city: t?.addressData?.city || "N/A",
+    state: t?.addressData?.state || "N/A",
+    country: t?.addressData?.country || "N/A",
+    pincode: t?.addressData?.pincode || "N/A",
+  }));
 
   return (
     <Container>
@@ -65,88 +91,12 @@ function ManageTeacher() {
           </Button>
         </form>
       </Box>
-      <Box mt={5}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          👩‍🏫 All Registered Teachers
-        </Typography>
 
-        {allTeachers?.length === 0 ? (
-          <Typography>No teachers found.</Typography>
-        ) : (
-          <Paper elevation={2} sx={{ overflowX: "auto" }}>
-            <Table>
-              <TableHead sx={{ backgroundColor: "#43cea2" }}>
-                <TableRow>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    #
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Avatar
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Name
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Email
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Phone
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Address
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    City
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    State
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Country
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Pincode
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {allTeachers?.map((teacher, index) => (
-                  <TableRow key={teacher._id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>
-                      <Avatar
-                        alt={teacher?.name}
-                        src={
-                          teacher?.image
-                            ? `http://192.168.146.1:5000/${teacher?.image}`
-                            : "/default-avatar.png"
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>{teacher?.name || "N/A"}</TableCell>
-                    <TableCell>{teacher?.email || "N/A"}</TableCell>
-                    <TableCell>{teacher?.phone || "N/A"}</TableCell>
-                    <TableCell>
-                      {teacher?.addressData?.address || "N/A"}
-                    </TableCell>
-                    <TableCell>{teacher?.addressData?.city || "N/A"}</TableCell>
-                    <TableCell>
-                      {teacher?.addressData?.state || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {teacher?.addressData?.country || "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {teacher?.addressData?.pincode || "N/A"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Paper>
-        )}
-      </Box>
+      <ListingTable
+        title="👩‍🏫 All Registered Teachers"
+        headers={teacherTableHeaders}
+        data={teacherTableData}
+      />
     </Container>
   );
 }

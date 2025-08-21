@@ -5,13 +5,6 @@ import {
   Container,
   TextField,
   Typography,
-  Paper,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -24,6 +17,7 @@ import {
   updateSubjectData,
 } from "../thunk/subjectThunk";
 import { toast } from "react-toastify";
+import ListingTable from "../commonComponents/ListingTable";
 
 function ManageSubjects() {
   const dispatch = useDispatch();
@@ -32,37 +26,40 @@ function ManageSubjects() {
   const [edit, setEdit] = useState(false);
   const [editId, setEditId] = useState(null);
   const { allSubjects } = useSelector((state) => state.subject);
+  console.log(allSubjects);
 
   useEffect(() => {
     dispatch(getAllSubjectData());
   }, [dispatch]);
 
   const handleAddOrUpdate = async () => {
-    if (!subject.trim()) return alert("Please enter subject name");
+    if (!subject) {
+      toast.error("Please enter subject name");
+    } else {
+      try {
+        if (edit) {
+          const res = await dispatch(
+            updateSubjectData({
+              id: editId,
+              values: { subject, category },
+            })
+          ).unwrap();
+          toast.success(res.msg || "Subject updated successfully");
+        } else {
+          const res = await dispatch(
+            addSubjectData({ subject, category })
+          ).unwrap();
+          toast.success(res.msg || "Subject added successfully");
+        }
 
-    try {
-      if (edit) {
-        const res = await dispatch(
-          updateSubjectData({
-            id: editId,
-            values: { subject, category},
-          })
-        ).unwrap();
-        toast.success(res.msg || "Subject updated successfully");
-      } else {
-        const res = await dispatch(
-          addSubjectData({ subject, category})
-        ).unwrap();
-        toast.success(res.msg || "Subject added successfully");
+        dispatch(getAllSubjectData());
+        setSubject("");
+        setCategory("");
+        setEdit(false);
+        setEditId(null);
+      } catch (error) {
+        toast.error(error?.msg || "Something went wrong");
       }
-
-      dispatch(getAllSubjectData());
-      setSubject("");
-      setCategory("");
-      setEdit(false);
-      setEditId(null);
-    } catch (error) {
-      toast.error(error?.msg || "Something went wrong");
     }
   };
 
@@ -74,16 +71,47 @@ function ManageSubjects() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this subject?")) {
-      try {
-        const res = await dispatch(deleteSubjectData(id)).unwrap();
-        toast.success(res.msg || "Subject deleted successfully");
-        dispatch(getAllSubjectData());
-      } catch (error) {
-        toast.error(error?.msg || "Failed to delete subject");
-      }
+    try {
+      const res = await dispatch(deleteSubjectData(id)).unwrap();
+      toast.success(res.msg || "Subject deleted successfully");
+      dispatch(getAllSubjectData());
+    } catch (error) {
+      toast.error(error?.msg || "Failed to delete subject");
     }
   };
+  const teacherTableHeaders = [
+    { label: "#", field: "index" },
+    { label: "Subject", field: "subject" },
+    { label: "Category", field: "category" },
+    { label: "Created At", field: "createdAt" },
+    { label: "Actions", field: "actions" },
+  ];
+  const teacherTableData = allSubjects.map((s, i) => ({
+    index: i + 1,
+    subject: s?.subject || "Unknown",
+    category: s?.category || "N/A",
+    createdAt: new Date(s?.createdAt).toLocaleDateString(),
+    actions: (
+      <>
+        <IconButton
+          color="primary"
+          onClick={() => {
+            handleEdit(s);
+          }}
+        >
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          color="error"
+          onClick={() => {
+            handleDelete(s?._id);
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </>
+    ),
+  }));
 
   return (
     <Container maxWidth="xl">
@@ -115,54 +143,11 @@ function ManageSubjects() {
           {edit ? "Update" : "Add"}
         </Button>
       </Box>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead sx={{ backgroundColor: "lightblue" }}>
-            <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>Subject</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allSubjects.length > 0 ? (
-              allSubjects.map((item, index) => (
-                <TableRow key={item._id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{item.subject}</TableCell>
-                  <TableCell>{item.category || "N/A"}</TableCell>
-                  <TableCell>
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      color="primary"
-                      onClick={() => handleEdit(item)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      onClick={() => handleDelete(item._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No subjects found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <ListingTable
+        title="📅 All Subjects"
+        headers={teacherTableHeaders}
+        data={teacherTableData}
+      />
     </Container>
   );
 }
