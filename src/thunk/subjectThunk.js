@@ -19,12 +19,12 @@ export const addSubjectData = createAsyncThunk(
 );
 export const getAllSubjectData = createAsyncThunk(
   "subject/getAllSubject",
-  async ({ rejectWithValue }) => {
+  async () => {
     try {
       const response = await getAllSubjectAPI();
       return response;
     } catch (error) {
-      return rejectWithValue(error.response || "Failed to fetch Products");
+      return error.response || "Failed to fetch Products";
     }
   }
 );
