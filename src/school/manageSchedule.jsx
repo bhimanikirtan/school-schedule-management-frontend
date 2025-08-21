@@ -33,6 +33,7 @@ import {
 import { toast } from "react-toastify";
 import { getAllSubjectData } from "../thunk/subjectThunk";
 import EventCard from "./EventCard";
+import ButtonComponent from "../commonComponents/ButtonComponent";
 
 export default function ManageSchedule() {
   const dispatch = useDispatch();
@@ -796,23 +797,26 @@ export default function ManageSchedule() {
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2, pt: 1 }}>
-          <Button onClick={handleClose} color="inherit" variant="outlined">
-            Cancel
-          </Button>
+          <ButtonComponent
+            onClick={handleClose}
+            variant="outlined"
+            buttonText="Cancel"
+            sx={{ border: "1px solid black", color: "black" }}
+          />
 
           {edit && (
-            <Button onClick={handleDelete} color="error" variant="outlined">
-              Delete
-            </Button>
+            <ButtonComponent
+              onClick={handleDelete}
+              variant="outlined"
+              buttonText="Delete"
+              sx={{ border: "1px solid red", color: "red" }}
+            />
           )}
-
-          <Button
-            variant="contained"
+          <ButtonComponent
             onClick={handleSave}
-            sx={{ bgcolor: "primary.main" }}
-          >
-            {edit ? "Update" : "Save"}
-          </Button>
+            buttonText={edit ? "Update" : "Save"}
+            sx={{ bgcolor: "primary.main", color: "#fff" }}
+          />
         </DialogActions>
       </Dialog>
     </div>

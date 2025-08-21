@@ -18,6 +18,7 @@ import {
 } from "../thunk/subjectThunk";
 import { toast } from "react-toastify";
 import ListingTable from "../commonComponents/ListingTable";
+import ButtonComponent from "../commonComponents/ButtonComponent";
 
 function ManageSubjects() {
   const dispatch = useDispatch();
@@ -135,13 +136,12 @@ function ManageSubjects() {
           fullWidth
         />
 
-        <Button
-          variant="contained"
+        <ButtonComponent
+          buttonText={edit ? "Update" : "Add"}
           onClick={handleAddOrUpdate}
-          sx={{ minWidth: 120, backgroundColor: "lightblue", color: "black" }}
-        >
-          {edit ? "Update" : "Add"}
-        </Button>
+          variant="contained"
+          sx={{ minWidth: 120, color: "black" }}
+        />
       </Box>
       <ListingTable
         title="📅 All Subjects"

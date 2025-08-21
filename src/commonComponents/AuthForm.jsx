@@ -14,6 +14,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useFormik } from "formik";
 import { Link as RouterLink } from "react-router-dom";
+import ButtonComponent from "./ButtonComponent";
 
 export default function AuthForm({
   title,
@@ -137,9 +138,8 @@ export default function AuthForm({
               ),
             }}
           />
-          <Button
-            type="submit"
-            variant="contained"
+          <ButtonComponent
+            buttonType={"submit"}
             fullWidth
             sx={{
               mt: 3,
@@ -148,14 +148,9 @@ export default function AuthForm({
               borderRadius: "50px",
               background: "linear-gradient(to right, #43cea2, #185a9d)",
             }}
-            disabled={loading}
-          >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              buttonText
-            )}
-          </Button>
+            buttonText={buttonText}
+            loading={loading}
+          />
         </form>
 
         <Box mt={3} textAlign="center">
