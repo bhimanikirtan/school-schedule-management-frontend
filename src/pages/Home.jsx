@@ -1,12 +1,9 @@
-import React from "react";
 import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   Container,
-  Stack,
   Grid,
   Paper,
 } from "@mui/material";
@@ -22,7 +19,6 @@ function Home() {
 
   return (
     <div>
-      {/* Navbar */}
       <AppBar position="static" sx={{ backgroundColor: "#fff", boxShadow: 1 }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Typography variant="h6" color="black">
@@ -40,7 +36,6 @@ function Home() {
         </Toolbar>
       </AppBar>
 
-      {/* Hero Section */}
       <Container sx={{ mt: 10, mb: 8 }}>
         <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
           Smart School Calendar Scheduler
@@ -57,8 +52,6 @@ function Home() {
           }}
         />
       </Container>
-
-      {/* Features Section */}
       <Container sx={{ mb: 10 }}>
         <Typography variant="h5" sx={{ fontWeight: "bold", mb: 4 }}>
           Key Features
@@ -99,8 +92,6 @@ function Home() {
           </Grid>
         </Grid>
       </Container>
-
-      {/* Footer */}
       <Box
         sx={{
           py: 3,

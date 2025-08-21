@@ -4,7 +4,6 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  Container,
   Drawer,
   List,
   ListItem,
@@ -18,10 +17,7 @@ import {
   ArrowBack as ArrowBackIcon,
   ArrowForward as ArrowForwardIcon,
   Dashboard as DashboardIcon,
-  People as PeopleIcon,
-  Email as EmailIcon,
   Event as EventIcon,
-  Folder as FolderIcon,
   Settings as SettingsIcon,
 } from "@mui/icons-material";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
@@ -113,19 +109,6 @@ function TeacherLayout() {
               </ListItemIcon>
               <ListItemText primary="Dashboard" />
             </ListItem>
-
-            {/* <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
-            <ListItem
-              button
-              component={NavLink}
-              to="/teacher/manageTeachers"
-              style={navLinkStyle}
-            >
-              <ListItemIcon sx={{ color: "#fff" }}>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary="ManageTeachers" />
-            </ListItem> */}
             <Divider sx={{ backgroundColor: "#7986cb", my: 2 }} />
 
             <ListItem

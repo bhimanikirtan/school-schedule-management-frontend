@@ -9,67 +9,65 @@ import {
 
 export const setScheduleData = createAsyncThunk(
   "schedule/setSchedule",
-  async (values) => {
+  async (values, { rejectWithValue }) => {
     try {
-      console.log(values, "+++++++++++++++++++");
-
       const response = await setScheduleAPI(values);
       return response;
     } catch (error) {
-      return error.response || "Failed to add schedule";
+      return rejectWithValue(error.response || "Failed to add schedule");
     }
   }
 );
 
 export const getAllScheduleData = createAsyncThunk(
   "schedule/getAllSchedule",
-  async (teacherId) => {
+  async (teacherId, { rejectWithValue }) => {
     try {
       const response = await getAllScheduleAPI(teacherId);
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch schedules";
+      return rejectWithValue(error.response || "Failed to fetch schedules");
     }
   }
 );
 
 export const getAllteacherScheduleData = createAsyncThunk(
   "schedule/getAllteacherSchedule",
-  async () => {
+  async ({ rejectWithValue }) => {
     try {
       const response = await getAllteacherScheduleAPI();
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch teacher schedules";
+      return rejectWithValue(
+        error.response || "Failed to fetch teacher schedules"
+      );
     }
   }
 );
 
 export const updateScheduleData = createAsyncThunk(
   "schedule/updateSchedule",
-  async ({ id, values }) => {
+  async ({ id, values }, { rejectWithValue }) => {
     try {
-      console.log(values, "00000000000000000");
-
       const response = await updateScheduleAPI({
         id,
         values,
       });
       return response;
     } catch (error) {
-      return error.response || "Failed to update schedule";
+      return rejectWithValue(error.response || "Failed to update schedule");
     }
   }
 );
 
 export const deleteScheduleData = createAsyncThunk(
   "schedule/deleteSchedule",
-  async (id) => {
+  async (id, { rejectWithValue }) => {
     try {
       const response = await deleteScheduleAPI(id);
       return response;
     } catch (error) {
-      return error.response || "Failed to delete schedule";
+      return rejectWithValue(error.response || "Failed to delete schedule");
     }
   }
 );

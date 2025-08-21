@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Typography, TextField, Button, Avatar } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
 import DeleteIcon from "@mui/icons-material/Delete";

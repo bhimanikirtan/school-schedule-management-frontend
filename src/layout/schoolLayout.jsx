@@ -3,7 +3,6 @@ import {
   Avatar,
   Box,
   CssBaseline,
-  Divider,
   Drawer,
   List,
   ListItem,

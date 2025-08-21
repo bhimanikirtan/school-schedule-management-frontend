@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
   Container,
   TextField,
   Typography,
@@ -27,7 +26,6 @@ function ManageSubjects() {
   const [edit, setEdit] = useState(false);
   const [editId, setEditId] = useState(null);
   const { allSubjects } = useSelector((state) => state.subject);
-  console.log(allSubjects);
 
   useEffect(() => {
     dispatch(getAllSubjectData());
@@ -45,14 +43,13 @@ function ManageSubjects() {
               values: { subject, category },
             })
           ).unwrap();
-          toast.success(res.msg || "Subject updated successfully");
+          toast.success(res?.msg || "Subject updated successfully");
         } else {
           const res = await dispatch(
             addSubjectData({ subject, category })
           ).unwrap();
           toast.success(res.msg || "Subject added successfully");
         }
-
         dispatch(getAllSubjectData());
         setSubject("");
         setCategory("");
@@ -80,6 +77,7 @@ function ManageSubjects() {
       toast.error(error?.msg || "Failed to delete subject");
     }
   };
+
   const teacherTableHeaders = [
     { label: "#", field: "index" },
     { label: "Subject", field: "subject" },
@@ -87,6 +85,7 @@ function ManageSubjects() {
     { label: "Created At", field: "createdAt" },
     { label: "Actions", field: "actions" },
   ];
+
   const teacherTableData = allSubjects.map((s, i) => ({
     index: i + 1,
     subject: s?.subject || "Unknown",

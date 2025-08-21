@@ -31,10 +31,9 @@ function TeacherRegister() {
         teacherRegisterData({ ...values, token })
       ).unwrap();
       toast.success(res.msg || "Registration successful");
-      setTimeout(() => navigate("/Login"), 1500);
+      navigate("/Login");
     } catch (err) {
       toast.error(err?.msg || "Registration failed");
-      console.error(err);
     } finally {
       setLoading(false);
     }
