@@ -146,7 +146,7 @@ export default function AuthForm({
               py: 1.5,
               fontWeight: "bold",
               borderRadius: "50px",
-              background: "linear-gradient(to right, #43cea2, #185a9d)",
+              background: "linear-gradient(to right,  #43cea2, #185a9d)",
             }}
             buttonText={buttonText}
             loading={loading}
