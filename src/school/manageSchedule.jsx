@@ -17,7 +17,7 @@ import {
 } from "../thunk/scheduleThunk";
 import { toast } from "react-toastify";
 import { getAllSubjectData } from "../thunk/subjectThunk";
-import EventCard from "./EventCard";
+import EventCard from "../commonComponents/EventCard";
 import DailogBox from "../commonComponents/DailogBox";
 import Popup from "../commonComponents/Popup";
 
