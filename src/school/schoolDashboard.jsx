@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { getAllTeachersData } from "../thunk/schoolThunk";
 import { getAllScheduleData } from "../thunk/scheduleThunk";
 import ListingTable from "../commonComponents/ListingTable";
+import ButtonComponent from "../commonComponents/ButtonComponent";
 
 function SchoolDashboard() {
   const navigate = useNavigate();
@@ -76,14 +77,10 @@ function SchoolDashboard() {
         👨‍🏫 Teachers Overview
       </Typography>
       <Paper sx={{ p: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
+        <ButtonComponent
           onClick={() => navigate("/school/manageTeacher")}
-        >
-          Manage Teachers
-        </Button>
+          buttonText="Manage Teachers"
+        />
       </Paper>
     </Box>
   );

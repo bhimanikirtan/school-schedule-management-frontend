@@ -11,6 +11,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import ButtonComponent from "../commonComponents/ButtonComponent";
 
 function Home() {
   const navigate = useNavigate();
@@ -28,18 +29,14 @@ function Home() {
             SCHOOL SCHEDULER
           </Typography>
 
-          <Button
-            variant="contained"
+          <ButtonComponent
+            onClick={handleLogin}
+            buttonText="LOG IN"
             sx={{
               backgroundColor: "#000",
-              borderRadius: 2,
-              px: 3,
-              fontWeight: "bold",
+              color: "#fff",
             }}
-            onClick={handleLogin}
-          >
-            LOG IN
-          </Button>
+          />
         </Toolbar>
       </AppBar>
 
@@ -51,21 +48,14 @@ function Home() {
         <Typography variant="h6" sx={{ color: "gray", mb: 4 }}>
           Organize your classes, events, exams, and meetings – all in one place.
         </Typography>
-
-        <Button
-          variant="contained"
+        <ButtonComponent
+          onClick={handleLogin}
+          buttonText="Get Started"
           sx={{
             backgroundColor: "#000",
-            px: 4,
-            py: 1,
-            fontWeight: "bold",
-            fontSize: 16,
-            borderRadius: 1,
+            color: "#fff",
           }}
-          onClick={handleLogin}
-        >
-          Get Started
-        </Button>
+        />
       </Container>
 
       {/* Features Section */}

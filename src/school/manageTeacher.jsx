@@ -12,6 +12,7 @@ import { sendEmailData } from "../thunk/userThunk";
 import { toast } from "react-toastify";
 import { getAllTeachersData } from "../thunk/schoolThunk";
 import ListingTable from "../commonComponents/ListingTable";
+import ButtonComponent from "../commonComponents/ButtonComponent";
 
 function ManageTeacher() {
   const dispatch = useDispatch();
@@ -86,9 +87,12 @@ function ManageTeacher() {
             sx={{ mb: 2 }}
           />
 
-          <Button type="submit" variant="contained" fullWidth>
-            Send Invitation
-          </Button>
+          <ButtonComponent
+            fullWidth
+            buttonType="submit"
+            buttonText="Send Invitation"
+            variant="contained"
+          />
         </form>
       </Box>
 
