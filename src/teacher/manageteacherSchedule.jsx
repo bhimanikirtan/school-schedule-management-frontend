@@ -30,9 +30,9 @@ import {
 import { toast } from "react-toastify";
 import { fetchUserData } from "../thunk/userThunk";
 import { getAllSubjectData } from "../thunk/subjectThunk";
-import EventCard from "./EventCard";
 import DailogBox from "../commonComponents/DailogBox";
 import Popup from "../commonComponents/Popup";
+import EventCard from "../commonComponents/EventCard";
 
 export default function ManageSchedule() {
   const dispatch = useDispatch();
