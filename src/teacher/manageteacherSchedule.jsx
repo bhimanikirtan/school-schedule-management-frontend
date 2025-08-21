@@ -32,6 +32,7 @@ import { fetchUserData } from "../thunk/userThunk";
 import { getAllSubjectData } from "../thunk/subjectThunk";
 import EventCard from "./EventCard";
 import DailogBox from "../commonComponents/DailogBox";
+import Popup from "../commonComponents/Popup";
 
 export default function ManageSchedule() {
   const dispatch = useDispatch();
@@ -401,92 +402,8 @@ export default function ManageSchedule() {
         eventContent={(info) => <EventCard title={info.event.title} />}
       />
 
-      {selectedEvent && (
-        <Popper
-          open={Boolean(selectedEvent)}
-          anchorEl={selectedEvent.anchorEl}
-          placement="right-start"
-          style={{ zIndex: 1000 }}
-        >
-          <Card
-            sx={{
-              width: 280,
-              boxShadow: 4,
-              backgroundColor: "#F4EEE5",
-              pointerEvents: "none",
-            }}
-          >
-            <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" color="text.secondary">
-                Title
-              </Typography>
-              <Typography variant="h6" fontWeight="bold" mb={2}>
-                {selectedEvent.title}
-              </Typography>
-              <Box display="flex" alignItems="center" mb={2}>
-                <Checkbox
-                  checked={true}
-                  disabled
-                  size="small"
-                  sx={{
-                    "&.Mui-checked": { color: "#d16f98ff" },
-                    padding: 0,
-                    mr: 1,
-                  }}
-                />
-                <Typography variant="body1" fontWeight="medium">
-                  Selected
-                </Typography>
-              </Box>
-              <Divider sx={{ my: 1 }} />
-              <Box display="flex" alignItems="center" gap={4} mb={1}>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Start Time
-                  </Typography>
-                  <Typography variant="body1">
-                    {new Date(selectedEvent.start).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    End Time
-                  </Typography>
-                  <Typography variant="body1">
-                    {new Date(selectedEvent.end).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Typography>
-                </Box>
-              </Box>
+      <Popup selectedEvent={selectedEvent} isTeacher={true} />
 
-              <Divider sx={{ my: 1 }} />
-              <Box display="flex" alignItems="center" gap={4}>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Class
-                  </Typography>
-                  <Typography variant="body1">
-                    {selectedEvent.className}
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Subject
-                  </Typography>
-                  <Typography variant="body1">
-                    {selectedEvent.subject}
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Popper>
-      )}
       <DailogBox
         onClose={handleClose}
         open={open}
