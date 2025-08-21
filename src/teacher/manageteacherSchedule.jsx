@@ -1,19 +1,3 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  MenuItem,
-  Box,
-  Card,
-  Avatar,
-  Divider,
-  Typography,
-  CardContent,
-  Checkbox,
-  Popper,
-} from "@mui/material";
 import React, { useState, useEffect, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -293,10 +277,14 @@ export default function ManageSchedule() {
   };
 
   const handleDelete = async () => {
-    const res = await dispatch(deleteScheduleData(editId)).unwrap();
-    toast.success(res.msg);
-    await fetchSchedules();
-    handleClose();
+    try {
+      const res = await dispatch(deleteScheduleData(editId)).unwrap();
+      toast.success(res.msg);
+      await fetchSchedules();
+      handleClose();
+    } catch (error) {
+      toast.error(error.msg || "error to Delete");
+    }
   };
 
   const handleClose = () => {

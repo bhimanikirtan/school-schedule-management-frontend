@@ -10,61 +10,67 @@ import {
 
 export const schoolRegisterData = createAsyncThunk(
   "user/schoolRegister",
-  async (values) => {
+  async (values, { rejectWithValue }) => {
     try {
       const response = await schoolRegisterAPI(values);
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return rejectWithValue(error.response || "Failed to fetch Products");
     }
   }
 );
-export const loginData = createAsyncThunk("user/login", async (values) => {
-  try {
-    const response = await loginAPI(values);
-    return response;
-  } catch (error) {
-    return error.response || "Failed to fetch Products";
+export const loginData = createAsyncThunk(
+  "user/login",
+  async (values, { rejectWithValue }) => {
+    try {
+      const response = await loginAPI(values);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response || "Failed to fetch Products");
+    }
   }
-});
+);
 export const sendEmailData = createAsyncThunk(
   "user/sendEmail",
-  async (email) => {
+  async (email, { rejectWithValue }) => {
     try {
       const response = await sendEmailAPI(email);
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return rejectWithValue(error.response || "Failed to fetch Products");
     }
   }
 );
 export const teacherRegisterData = createAsyncThunk(
   "user/teacherRegister",
-  async (values) => {
+  async (values, { rejectWithValue }) => {
     try {
       const response = await teacherRegisterAPI(values);
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return rejectWithValue(error.response || "Failed to fetch Products");
     }
   }
 );
-export const fetchUserData = createAsyncThunk("user/fetchUser", async () => {
-  try {
-    const response = await fetchUserAPI();
-    return response;
-  } catch (error) {
-    return error.response || "Failed to fetch Products";
+export const fetchUserData = createAsyncThunk(
+  "user/fetchUser",
+  async ({ rejectWithValue }) => {
+    try {
+      const response = await fetchUserAPI();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response || "Failed to fetch Products");
+    }
   }
-});
+);
 export const updateProfileData = createAsyncThunk(
   "user/updateProfile",
-  async (values) => {
+  async (values, { rejectWithValue }) => {
     try {
       const response = await updateProfileAPI(values);
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return rejectWithValue(error.response || "Failed to fetch Products");
     }
   }
 );

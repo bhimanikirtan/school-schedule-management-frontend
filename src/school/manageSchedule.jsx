@@ -4,7 +4,6 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import rrulePlugin from "@fullcalendar/rrule";
-
 import interactionPlugin from "@fullcalendar/interaction";
 import "./ManageSchedule.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,7 +43,6 @@ export default function ManageSchedule() {
     dtstart: "",
     bymonthday: "",
   });
-
   const [edit, setEdit] = useState(false);
   const [editId, setEditId] = useState("");
   const [isRecurrence, setisRecurrence] = useState(false);
@@ -148,11 +146,8 @@ export default function ManageSchedule() {
   useEffect(() => {
     dispatch(getAllTeachersData());
     dispatch(getAllSubjectData());
-  }, [dispatch]);
-
-  useEffect(() => {
     fetchSchedules();
-  }, [fetchSchedules]);
+  }, [dispatch, fetchSchedules]);
 
   /*********************************Date Click Function*********************************** */
 
@@ -180,8 +175,6 @@ export default function ManageSchedule() {
   /*********************************Event Click Function*********************************** */
 
   const handleEventClick = (info) => {
-    console.log(info, "IIIIIIIIIIIIIIIIIIIIIIIII");
-
     setEdit(true);
     setEditId(info.event.id);
     setFormData({
@@ -212,11 +205,6 @@ export default function ManageSchedule() {
 
     setOpen(true);
   };
-  useEffect(() => {
-    console.log("Recurrence updated:", recurrence);
-    console.log("Formdata updated:", formData);
-  }, [recurrence, formData]);
-
   /*********************************Event change Function*********************************** */
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -312,10 +300,14 @@ export default function ManageSchedule() {
 
   /*********************************Event Delete Function*********************************** */
   const handleDelete = async () => {
-    const res = await dispatch(deleteScheduleData(editId)).unwrap();
-    toast.success(res.msg);
-    await fetchSchedules();
-    handleClose();
+    try {
+      const res = await dispatch(deleteScheduleData(editId)).unwrap();
+      toast.success(res.msg);
+      await fetchSchedules();
+      handleClose();
+    } catch (error) {
+      toast.error(error?.msg || "Failed to Delete");
+    }
   };
   /*********************************DailogBox Close Function*********************************** */
   const handleClose = () => {

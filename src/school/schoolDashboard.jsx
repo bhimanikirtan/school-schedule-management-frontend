@@ -1,11 +1,4 @@
-import {
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@mui/material";
-import { Box, Grid, Paper, Typography, Button, Divider } from "@mui/material";
+import { Box, Grid, Paper, Typography, Divider } from "@mui/material";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -19,8 +12,6 @@ function SchoolDashboard() {
   const dispatch = useDispatch();
   const { allSchedule } = useSelector((state) => state.schedule);
   const { allTeachers } = useSelector((state) => state.school);
-  console.log(allSchedule);
-
   useEffect(() => {
     dispatch(getAllTeachersData());
     dispatch(getAllScheduleData());
@@ -39,8 +30,6 @@ function SchoolDashboard() {
     start: new Date(s?.start).toLocaleString(),
     end: new Date(s?.end).toLocaleString(),
   }));
-
-  console.log(teacherTableData);
 
   return (
     <Box sx={{ p: 2 }}>

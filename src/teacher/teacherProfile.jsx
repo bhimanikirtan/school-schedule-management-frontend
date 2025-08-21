@@ -8,8 +8,6 @@ import ProfileForm from "../commonComponents/ProfileForm";
 export default function TeacherProfilePage() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  console.log(user, "**********************");
-
   const fileInputRef = useRef(null);
   const [imageFile, setImageFile] = useState(null);
   const [formData, setFormData] = useState({
@@ -22,9 +20,6 @@ export default function TeacherProfilePage() {
     pincode: "",
     country: "",
   });
-  useEffect(() => {
-    dispatch(fetchUserData());
-  }, [dispatch]);
   useEffect(() => {
     if (user) {
       setFormData({
@@ -39,7 +34,8 @@ export default function TeacherProfilePage() {
       });
       setImageFile(`http://192.168.146.1:5000/${user?.image}`);
     }
-  }, [user]);
+    dispatch(fetchUserData());
+  }, [user, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,7 +63,7 @@ export default function TeacherProfilePage() {
       toast.success(res.msg);
       dispatch(fetchUserData());
     } catch (error) {
-      console.error("Update error:", error);
+      toast.error(error.msg || "Failed to Update Profile");
     }
   };
 

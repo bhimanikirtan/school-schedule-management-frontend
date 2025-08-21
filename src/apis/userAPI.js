@@ -13,8 +13,6 @@ export const sendEmailAPI = async (email) => {
   return response.data;
 };
 export const teacherRegisterAPI = async (values) => {
-  console.log(values, "values");
-
   const response = await api.post(`teacher/teacherRegister`, values);
   return response.data;
 };
@@ -23,8 +21,6 @@ export const fetchUserAPI = async () => {
   return response.data;
 };
 export const updateProfileAPI = async (values) => {
-  console.log(values);
-
   const response = await api.put(`login/updateProfile`, values);
   return response.data;
 };

@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  Container,
-  Avatar,
-} from "@mui/material";
+import { TextField, Box, Typography, Container, Avatar } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { sendEmailData } from "../thunk/userThunk";
 import { toast } from "react-toastify";
@@ -17,7 +10,6 @@ import ButtonComponent from "../commonComponents/ButtonComponent";
 function ManageTeacher() {
   const dispatch = useDispatch();
   const { allTeachers } = useSelector((state) => state.school);
-
   const [email, setEmail] = useState("");
 
   const handleSubmit = async (e) => {
@@ -30,10 +22,10 @@ function ManageTeacher() {
       toast.error(err?.msg || "Failed to send invitation");
     }
   };
-
   useEffect(() => {
     dispatch(getAllTeachersData());
   }, [dispatch]);
+
   const teacherTableHeaders = [
     { label: "#", field: "index" },
     { label: "Avatar", field: "avatar" },
@@ -46,6 +38,7 @@ function ManageTeacher() {
     { label: "Country", field: "country" },
     { label: "Pincode", field: "pincode" },
   ];
+
   const teacherTableData = allTeachers.map((t, i) => ({
     index: i + 1,
     avatar: (

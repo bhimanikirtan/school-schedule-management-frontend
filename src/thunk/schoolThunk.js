@@ -3,12 +3,12 @@ import { getAllTeachersAPI } from "../apis/schoolAPI";
 
 export const getAllTeachersData = createAsyncThunk(
   "school/getAllteachers",
-  async () => {
+  async ({ rejectWithValue }) => {
     try {
       const response = await getAllTeachersAPI();
       return response;
     } catch (error) {
-      return error.response || "Failed to fetch Products";
+      return rejectWithValue(error.response || "Failed to fetch Products");
     }
   }
 );
