@@ -52,17 +52,14 @@ export const teacherRegisterData = createAsyncThunk(
     }
   }
 );
-export const fetchUserData = createAsyncThunk(
-  "user/fetchUser",
-  async ({ rejectWithValue }) => {
-    try {
-      const response = await fetchUserAPI();
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.response || "Failed to fetch Products");
-    }
+export const fetchUserData = createAsyncThunk("user/fetchUser", async () => {
+  try {
+    const response = await fetchUserAPI();
+    return response;
+  } catch (error) {
+    return error.response || "Failed to fetch Products";
   }
-);
+});
 export const updateProfileData = createAsyncThunk(
   "user/updateProfile",
   async (values, { rejectWithValue }) => {

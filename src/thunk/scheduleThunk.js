@@ -33,14 +33,12 @@ export const getAllScheduleData = createAsyncThunk(
 
 export const getAllteacherScheduleData = createAsyncThunk(
   "schedule/getAllteacherSchedule",
-  async ({ rejectWithValue }) => {
+  async () => {
     try {
       const response = await getAllteacherScheduleAPI();
       return response;
     } catch (error) {
-      return rejectWithValue(
-        error.response || "Failed to fetch teacher schedules"
-      );
+      return error.response || "Failed to fetch teacher schedules";
     }
   }
 );
