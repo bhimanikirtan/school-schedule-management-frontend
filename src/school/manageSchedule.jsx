@@ -1,0 +1,466 @@
+import { TextField, MenuItem, Box } from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import rrulePlugin from "@fullcalendar/rrule";
+import interactionPlugin from "@fullcalendar/interaction";
+import "./ManageSchedule.css";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTeachersData } from "../thunk/schoolThunk";
+import {
+  deleteScheduleData,
+  getAllScheduleData,
+  setScheduleData,
+  updateScheduleData,
+} from "../thunk/scheduleThunk";
+import { toast } from "react-toastify";
+import { getAllSubjectData } from "../thunk/subjectThunk";
+import EventCard from "../commonComponents/EventCard";
+import DailogBox from "../commonComponents/DailogBox";
+import Popup from "../commonComponents/Popup";
+
+export default function ManageSchedule() {
+  const dispatch = useDispatch();
+  const { allTeachers } = useSelector((state) => state.school);
+  const { allSubjects } = useSelector((state) => state.subject);
+  const [open, setOpen] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [formData, setFormData] = useState({
+    teacherId: "",
+    title: "",
+    subject: "",
+    className: "",
+    start: "",
+    end: "",
+  });
+  const [recurrence, setRecurrence] = useState({
+    freq: "",
+    interval: 1,
+    byweekday: [],
+    until: "",
+    dtstart: "",
+    bymonthday: "",
+  });
+  const [edit, setEdit] = useState(false);
+  const [editId, setEditId] = useState("");
+  const [isRecurrence, setisRecurrence] = useState(false);
+  const [selectedTeacherId, setSelectedTeacherId] = useState("");
+
+  /*********************************Date Format Function*********************************** */
+
+  const formatDateTime = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date - tzOffset).toISOString().slice(0, 16);
+  };
+  function rruleToDateTimeLocal(rruleDate) {
+    if (!rruleDate) return "";
+    const date = new Date(
+      rruleDate.replace(
+        /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,
+        "$1-$2-$3T$4:$5:$6Z"
+      )
+    );
+    return date.toISOString().slice(0, 16);
+  }
+
+  /*********************************Event Fetch and set Function*********************************** */
+
+  const fetchSchedules = useCallback(async () => {
+    const res = await dispatch(getAllScheduleData(selectedTeacherId)).unwrap();
+    console.log(res.allSchedules, "+++++++++++++");
+
+    const mapped = (res?.allSchedules || []).map((s) => {
+      const teacherName = s?.teacherId?.name || "";
+      const image = s?.teacherId?.image || "";
+      const subject = s?.subject || "";
+      const className = s?.className || "";
+      const title = s?.title || "";
+
+      if (s?.rrule) {
+        const rruleParts = {};
+        s.rrule.split(";").forEach((part) => {
+          const [key, value] = part.split("=");
+          rruleParts[key] = value;
+        });
+
+        const byweekday = rruleParts?.BYDAY ? rruleParts.BYDAY.split(",") : [];
+        const freq = rruleParts?.FREQ?.toLowerCase() || "";
+        const interval = parseInt(rruleParts?.INTERVAL) || 1;
+        const until = rruleParts?.UNTIL || null;
+        const dtstart = rruleParts?.DTSTART || s.start;
+        const bymonthday = rruleParts?.BYMONTHDAY
+          ? Number(rruleParts.BYMONTHDAY)
+          : null;
+
+        return {
+          id: s._id,
+          title: `${teacherName} ${title ? "· " + title : ""}`,
+          rrule: {
+            freq: freq?.toUpperCase(),
+            interval,
+            byweekday,
+            dtstart,
+            until,
+            bymonthday,
+          },
+          extendedProps: {
+            teacherId: s.teacherId?._id || "",
+            teacherName,
+            image,
+            title,
+            subject,
+            className,
+            recurrence: {
+              freq: freq?.toUpperCase(),
+              interval,
+              byweekday,
+              until,
+              dtstart,
+              bymonthday,
+            },
+          },
+        };
+      }
+
+      return {
+        id: s._id,
+        title: `${teacherName} ${title ? "· " + title : ""}`,
+        start: s.start,
+        end: s.end,
+        extendedProps: {
+          teacherId: s.teacherId?._id || "",
+          teacherName,
+          image,
+          title,
+          subject,
+          className,
+        },
+      };
+    });
+
+    setEvents(mapped);
+  }, [dispatch, selectedTeacherId]);
+
+  useEffect(() => {
+    dispatch(getAllTeachersData());
+    dispatch(getAllSubjectData());
+    fetchSchedules();
+  }, [dispatch, fetchSchedules]);
+
+  /*********************************Date Click Function*********************************** */
+
+  const handleDateClick = (info) => {
+    setEdit(false);
+    setEditId("");
+    setFormData({
+      teacherId: "",
+      title: "",
+      subject: "",
+      className: "",
+      start: formatDateTime(info.date),
+      end: formatDateTime(info.date),
+    });
+    setRecurrence({
+      freq: "",
+      interval: 1,
+      byweekday: [],
+      until: "",
+      dtstart: "",
+      bymonthday: "",
+    });
+    setOpen(true);
+  };
+  /*********************************Event Click Function*********************************** */
+
+  const handleEventClick = (info) => {
+    setEdit(true);
+    setEditId(info.event.id);
+    setFormData({
+      teacherId: info.event.extendedProps.teacherId || "",
+      title: info.event.extendedProps.title || "",
+      subject: info.event.extendedProps.subject || "",
+      className: info.event.extendedProps.className || "",
+      start: formatDateTime(info.event.start),
+      end: formatDateTime(info.event.end || info.event.start),
+    });
+
+    const eventRecurrence =
+      info.event.rrule || info.event.extendedProps.recurrence || {};
+    console.log("Event recurrence for editing:", eventRecurrence);
+
+    setRecurrence({
+      freq: eventRecurrence.freq?.toLowerCase() || "",
+      interval: eventRecurrence.interval || 1,
+      byweekday: eventRecurrence.byweekday || eventRecurrence.byWeekDay || [],
+      until: eventRecurrence.until
+        ? rruleToDateTimeLocal(eventRecurrence.until)
+        : "",
+      dtstart: eventRecurrence.dtstart || "",
+      bymonthday: eventRecurrence.bymonthday
+        ? Number(eventRecurrence.bymonthday)
+        : "",
+    });
+
+    setOpen(true);
+  };
+  /*********************************Event change Function*********************************** */
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  /*********************************Make EventFormate Function*********************************** */
+  const buildRRule = (recurrence) => {
+    if (!recurrence || !recurrence.freq) return "";
+
+    const {
+      freq,
+      interval = 1,
+      byweekday = [],
+      bymonthday = "",
+      until = "",
+    } = recurrence;
+
+    let rule = `FREQ=${freq?.toUpperCase()}`;
+
+    if (interval > 1) rule += `;INTERVAL=${interval}`;
+
+    if (byweekday.length > 0 && freq?.toUpperCase() === "WEEKLY") {
+      rule += `;BYDAY=${byweekday
+        .map((d) => d.trim().toUpperCase())
+        .join(",")}`;
+    }
+
+    if (freq.toUpperCase() === "MONTHLY" && bymonthday) {
+      rule += `;BYMONTHDAY=${bymonthday}`;
+    }
+
+    if (until) {
+      if (/^\d{8}T\d{6}Z$/.test(until)) {
+        rule += `;UNTIL=${until}`;
+      } else {
+        const untilDate = new Date(until);
+        if (!isNaN(untilDate)) {
+          const formatted =
+            untilDate.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+          rule += `;UNTIL=${formatted}`;
+        }
+      }
+    }
+
+    console.log("Generated RRULE:", rule);
+    return rule;
+  };
+
+  /*********************************Event Save and Update Function*********************************** */
+  const handleSave = async () => {
+    try {
+      const payload = {
+        teacherId: formData.teacherId,
+        title: formData.title,
+        subject: formData.subject,
+        className: formData.className,
+        start: new Date(formData.start).toISOString(),
+        end: new Date(formData.end).toISOString(),
+      };
+
+      console.log("Saving with recurrence:", recurrence);
+
+      if (isRecurrence) {
+        const rrule = buildRRule(recurrence);
+        console.log("Generated rrule:", rrule);
+
+        if (rrule) {
+          payload.rrule = rrule;
+        }
+      }
+
+      console.log("Final payload:", payload);
+
+      let res;
+      if (edit) {
+        res = await dispatch(
+          updateScheduleData({ id: editId, values: payload })
+        ).unwrap();
+      } else {
+        res = await dispatch(setScheduleData(payload)).unwrap();
+      }
+
+      toast.success(res.msg);
+      await fetchSchedules();
+      handleClose();
+    } catch (error) {
+      toast.error(error?.message || "Something went wrong");
+    }
+  };
+
+  /*********************************Event Delete Function*********************************** */
+  const handleDelete = async () => {
+    try {
+      const res = await dispatch(deleteScheduleData(editId)).unwrap();
+      toast.success(res.msg);
+      await fetchSchedules();
+      handleClose();
+    } catch (error) {
+      toast.error(error?.msg || "Failed to Delete");
+    }
+  };
+  /*********************************DailogBox Close Function*********************************** */
+  const handleClose = () => {
+    setOpen(false);
+    setFormData({
+      teacherId: "",
+      title: "",
+      subject: "",
+      className: "",
+      start: "",
+      end: "",
+    });
+    setRecurrence({
+      freq: "",
+      interval: 1,
+      byweekday: [],
+      until: "",
+      dtstart: "",
+      bymonthday: "",
+    });
+    setEditId("");
+    setEdit(false);
+  };
+  /*********************************Event payload make Function*********************************** */
+  const buildSchedulePayload = (event) => {
+    const finalRecurrence = event.extendedProps.recurrence || {};
+    const rrule = buildRRule(finalRecurrence);
+
+    return {
+      id: event.id,
+      teacherId: event.extendedProps.teacherId,
+      title: event.extendedProps.title,
+      subject: event.extendedProps.subject,
+      className: event.extendedProps.className,
+      start: event.start?.toISOString(),
+      end: event.end?.toISOString(),
+      rrule,
+    };
+  };
+  /*********************************Event drag and drop Function*********************************** */
+  const handleEventDrop = async (info) => {
+    const event = info.event;
+    console.log("Event being dropped:", event);
+
+    const payload = buildSchedulePayload(event);
+    console.log("Drop Payload:", payload);
+
+    await dispatch(
+      updateScheduleData({ id: event.id, values: payload })
+    ).unwrap();
+    fetchSchedules();
+  };
+  /*********************************Event Resize Function*********************************** */
+  const handleEventResize = async (info) => {
+    const event = info.event;
+    console.log("Event being resized:", event);
+
+    const payload = buildSchedulePayload(event);
+    console.log("Resize Payload:", payload);
+
+    await dispatch(
+      updateScheduleData({ id: event.id, values: payload })
+    ).unwrap();
+    fetchSchedules();
+  };
+  /*********************************Event Hover Function*********************************** */
+  const handleEventHover = (info) => {
+    setSelectedEvent({
+      teacherName: info.event.extendedProps.teacherName,
+      image: info.event.extendedProps.image,
+      title: info.event.extendedProps.title,
+      start: info.event.start,
+      end: info.event.end,
+      className: info.event.extendedProps.className,
+      subject: info.event.extendedProps.subject,
+      anchorEl: info.el,
+    });
+  };
+  /*********************************Event Close hover Function*********************************** */
+  const handleEventLeave = () => setSelectedEvent(null);
+
+  const selectedTeacher =
+    allTeachers.find((t) => t._id === formData.teacherId) || null;
+
+  return (
+    <div className="myCalendarWrapper">
+      <Box sx={{ p: 2, pb: 0 }}>
+        <TextField
+          select
+          label="Filter by Teacher"
+          value={selectedTeacherId}
+          onChange={(e) => setSelectedTeacherId(e.target.value)}
+          size="small"
+          sx={{ minWidth: 200 }}
+        >
+          <MenuItem value="">All Teachers</MenuItem>
+          {allTeachers.map((t) => (
+            <MenuItem key={t._id} value={t._id}>
+              {t.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
+      <FullCalendar
+        plugins={[
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin,
+          rrulePlugin,
+        ]}
+        initialView="timeGridWeek"
+        events={events}
+        editable
+        selectable
+        eventMouseEnter={handleEventHover}
+        eventMouseLeave={handleEventLeave}
+        eventClick={handleEventClick}
+        dateClick={handleDateClick}
+        eventDrop={handleEventDrop}
+        eventResize={handleEventResize}
+        headerToolbar={{
+          left: "prev,title,next",
+          right: "",
+        }}
+        eventContent={(info) => (
+          <EventCard
+            teacherName={info.event.extendedProps.teacherName}
+            image={info.event.extendedProps.image}
+          />
+        )}
+      />
+      {/* /*********************************Event Popup show card*********************************** */}
+
+      <Popup selectedEvent={selectedEvent} />
+
+      {/* /*************************Event Add Delete Edit Form Open***************************** */}
+
+      <DailogBox
+        onClose={handleClose}
+        open={open}
+        selectedTeacher={selectedTeacher}
+        edit={edit}
+        formData={formData}
+        onChange={handleChange}
+        allTeachers={allTeachers}
+        allSubjects={allSubjects}
+        recurrence={recurrence}
+        setRecurrence={setRecurrence}
+        setisRecurrence={setisRecurrence}
+        onClick1={handleClose}
+        onClick2={handleDelete}
+        onClick3={handleSave}
+      />
+    </div>
+  );
+}
