@@ -34,9 +34,10 @@ export default function TeacherProfilePage() {
       });
       setImageFile(`http://192.168.146.1:5000/${user?.image}`);
     }
+  }, [user]);
+  useEffect(() => {
     dispatch(fetchUserData());
-  }, [user, dispatch]);
-
+  }, [dispatch]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
